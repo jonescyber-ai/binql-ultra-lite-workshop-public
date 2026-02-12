@@ -90,6 +90,8 @@ Then head to **Lab 0 — Environment Setup** (`docs/labs/lab0/lab_0_0_overview.m
 
 To keep the workshop accessible and **token-cost friendly**, we intentionally use **gpt-4o-mini** (OpenAI) and **claude-sonnet-4-5-20250929** (Anthropic) as defaults. These models offer a powerful balance of reasoning capability and low cost for student use.
 
+> 💰 **Disclaimer:** While we make a best-effort attempt to be token-friendly, you are solely responsible for any API costs incurred using your own keys. See the [LLM Token Usage Disclaimer](docs/token_usage_disclaimer.md) for details.
+
 ### No Prior Experience Required
 
 - **New to graphs?** Lab 1 introduces graph concepts from scratch — nodes, relationships, properties, and queries.
