@@ -18,7 +18,14 @@ By participating in this workshop and using your own API keys, you acknowledge a
 1.  **Usage Costs:** You are solely responsible for any and all costs, fees, or charges incurred through your OpenAI or Anthropic accounts as a result of running the lab exercises, tests, or examples provided in this workshop.
 2.  **No Compensation:** The workshop authors, instructors, and maintainers are not responsible for, and will not provide compensation or reimbursement for, any LLM API usage costs.
 3.  **Monitoring Usage:** You are responsible for monitoring your own usage and setting spend limits or alerts within your provider's dashboard (OpenAI Platform or Anthropic Console) to prevent unexpected charges.
-4.  **No Guarantee:** While we strive for efficiency, we do not guarantee any specific cost level. Token usage can vary based on the complexity of queries, binary artifacts, and model responses.
+4.  **No Guarantee of Costs:** While we strive for efficiency, we do not guarantee any specific cost level. Token usage can vary based on the complexity of queries, binary artifacts, model updates, and stochastic model responses.
+5.  **Limitation of Liability:** In no event shall the authors, instructors, or organizers be liable for any direct, indirect, incidental, or consequential damages resulting from API usage or billing discrepancies.
+
+## Key Considerations
+
+- **Stochastic Responses:** LLMs are non-deterministic. Identical prompts can result in different response lengths, which may affect token consumption over multiple runs.
+- **Provider Changes:** API pricing, model availability, and billing policies are determined solely by the third-party providers (OpenAI/Anthropic) and are subject to change without notice.
+- **Experimental Code:** Some lab exercises involve experimental prompts or loops. While we design these to be safe, software bugs or unexpected model behavior could lead to higher-than-expected token usage.
 
 ## Recommendations
 
