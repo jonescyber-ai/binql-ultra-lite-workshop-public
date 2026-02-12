@@ -322,5 +322,3 @@ binql-ultra-lite (binql-ul)  →  binql-lite  →  binql (full)
 > **Short name:** We sometimes use **binql-ul** as shorthand for **binql-ultra-lite**.
 
 This repository contains the workshop materials and example code needed to follow along. As content is added/updated, this README will be expanded with additional exercises and troubleshooting notes.
-
-> ℹ️ **binql-ultra-lite** is a **workshop-scoped version** of binql — designed for a 3–4 hour hands-on session. For the **4-day courses** taught at Black Hat and RECON, we use **binql-lite**, which includes a richer schema, more labs, and deeper analysis workflows. A **full open-source release of binql** is planned after the current training cycle (2026).
