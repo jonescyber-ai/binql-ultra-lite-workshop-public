@@ -3,6 +3,8 @@
 > 🔧 **This is a tool-running lab.** You will configure an API key and verify that the LLM client works.
 >
 > 🔑 **Bring Your Own API Key** — No API key is provided with this workshop. You must supply your own key for **OpenAI** ([get one here](https://platform.openai.com/api-keys)) or **Anthropic** ([get one here](https://console.anthropic.com/settings/keys)). You need at least one to proceed.
+>
+> 💰 **Disclaimer:** You are responsible for all API costs incurred. By using the materials in this workshop, you agree to the terms described in the [LLM Token Usage Disclaimer](../../token_usage_disclaimer.md).
 
 ---
 
