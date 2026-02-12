@@ -58,6 +58,9 @@ No prior experience with graphs or LLMs is required — the labs build up from s
 
 ## 🚀 Quick Start
 
+- Windows 11 or Linux (Ubuntu) — *Tested*
+- macOS — *It should work™*
+
 ```bash
 git clone https://github.com/jonescyber-ai/binql-ultra-lite-workshop.git
 cd binql-ultra-lite-workshop
