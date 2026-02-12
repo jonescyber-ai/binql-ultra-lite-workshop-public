@@ -37,7 +37,7 @@ The catch is that writing those queries by hand — in a language called **Cyphe
 
 > 🔑 **Bring Your Own API Key** — This workshop requires an API key for **OpenAI** ([get one here](https://platform.openai.com/api-keys)) or **Anthropic** ([get one here](https://console.anthropic.com/settings/keys)). No API key is provided — you must supply your own. See **Lab 0.4** for setup instructions.
 >
-> 💰 **Disclaimer:** While we make a best-effort attempt to be token-friendly, you are solely responsible for any API costs incurred using your own keys. See the [LLM Token Usage Disclaimer](docs/token_usage_disclaimer.md) for details.
+> 💰 **Disclaimer:** While we make a best-effort attempt to be token-friendly, you are solely responsible for any API costs incurred using your own keys. By using the materials in this workshop, you agree to the terms described in the [LLM Token Usage Disclaimer](docs/token_usage_disclaimer.md).
 
 The labs follow the story above — build the graph, experience the query friction, then solve it:
 
