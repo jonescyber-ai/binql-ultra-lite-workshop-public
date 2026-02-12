@@ -70,7 +70,7 @@ cd binql-ultra-lite-workshop
 
 > ℹ️ If you clone into a different folder name, that's fine — just `cd` into your cloned folder.
 
-Then head to **Lab 0 — Environment Setup** (`docs/labs/lab0/lab_0_0_overview.md`) to get started.
+Then head to **Lab 0 — Environment Setup** ([docs/labs/lab0/lab_0_0_overview.md](docs/labs/lab0/lab_0_0_overview.md)) to get started.
 
 ---
 
@@ -102,7 +102,7 @@ To keep the workshop accessible and **token-cost friendly**, we intentionally us
 
 ## ▶️ Ready to Start?
 
-Head to **Lab 0 — Environment Setup** (`docs/labs/lab0/lab_0_0_overview.md`) to get your environment configured and validated. **Lab 0 is pre-work — complete it before the workshop starts** so we can jump straight into Lab 1 on day one.
+Head to **Lab 0 — Environment Setup** ([docs/labs/lab0/lab_0_0_overview.md](docs/labs/lab0/lab_0_0_overview.md)) to get your environment configured and validated. **Lab 0 is pre-work — complete it before the workshop starts** so we can jump straight into Lab 1 on day one.
 
 ---
 
