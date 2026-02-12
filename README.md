@@ -72,7 +72,8 @@ Then head to **Lab 0 — Environment Setup** (`docs/labs/lab0/lab_0_0_overview.m
 ## 📋 Prerequisites
 
 ### Operating System
-- Windows or Linux
+- Windows 11 or Linux (Ubuntu) — *Tested*
+- macOS™ — *Supported*
 - **64-bit x86_64** architecture required
 
 ### Software and Access
