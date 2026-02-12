@@ -4,7 +4,7 @@
 
 That's the idea behind **binql-ultra-lite** (`binql-ul`): a hands-on workshop where you build a system that combines **graphs**, **large language models (LLMs)**, and **program analysis** to answer questions about binaries — without writing complex query syntax.
 
-<table><tr><td>📌 <sub><em>binql-ultra-lite</em> is the workshop edition of <b>binql</b>. A richer <em>binql-lite</em> powers our 4-day courses; a full open-source release is planned after the current training cycle (2026). <a href="#-additional-reading">Additional Reading</a> → <em>"Versions of binql"</em></sub></td></tr></table>
+<table><tr><td>📌 <sub><em>binql-ultra-lite</em> is the workshop edition of <b>binql</b>. A richer <em>binql-lite</em> powers our 4-day courses (<a href="https://recon.cx/2026/en/trainingAutomatingREwithAIML.html">upcoming: Automating Reverse Engineering with AI/ML, Graphs, and LLM Agents — RECON 2026</a> · <a href="docs/syllabus/syllabus_4day_course.md">4-day course syllabus</a>); a full open-source release is planned after the current training cycle (2026). <a href="#-additional-reading">Additional Reading</a> → <em>"Versions of binql"</em></sub></td></tr></table>
 
 ---
 
@@ -34,6 +34,8 @@ The catch is that writing those queries by hand — in a language called **Cyphe
 ---
 
 ## 🧪 What You'll Do in This Workshop
+
+> 🔑 **Bring Your Own API Key** — This workshop requires an API key for **OpenAI** ([get one here](https://platform.openai.com/api-keys)) or **Anthropic** ([get one here](https://console.anthropic.com/settings/keys)). No API key is provided — you must supply your own. See **Lab 0.4** for setup instructions.
 
 The labs follow the story above — build the graph, experience the query friction, then solve it:
 
@@ -229,38 +231,66 @@ binql-ultra-lite (binql-ul)  →  binql-lite  →  binql (full)
 | | **binql-ul** | **binql-lite** | **binql** |
 |---|---|---|---|
 | **Status** | **This repository** (3–4 hour workshop) | Used in 4-day Black Hat / RECON courses | Open-source release planned (post-training cycle) |
-| **Graph schema** | Minimal subset | Full | Full (functions, BBs, CFG, call graph, imports, strings, cross-binary) |
-| **NL2GQL** | ✅ Basic | ✅ With prompting patterns | ✅ With guardrails |
-| **Fine-tuning support** | ❌ | ❌ | ✅ Models trained on binql ontology |
-| **Binary extraction** | BYO (use Blackfyre separately) | Integrated | Integrated |
-| **Ingestion automation** | Manual | ✅ | ✅ |
-| **Malware analysis** | ❌ | Labs included | Capability mapping, clustering, behavioral triage |
-| **Vulnerability analysis** | ✅ Graph-based (Lab 3) | Labs included | Unsafe APIs, reachability, patch-diff, code reuse |
-| **Firmware analysis** | ❌ | Labs included | Multi-binary ecosystems, shared-library tracking |
+| **Graph schema** | Minimal subset | Full (functions, BBs, CFG, call graph, imports, strings, cross-binary) | Full + similarity edges, n-gram entities, enriched string nodes |
+| **NL2GQL** | ✅ Schema + examples + constraints | ✅ Prompting patterns + iterative refinement | ✅ With guardrails + fine-tuned models |
+| **Fine-tuning support** | ❌ | ✅ Fine-tune LLaMA for NL2GQL on A6000 GPUs | ✅ Production fine-tuned models |
+| **Embeddings & similarity** | ❌ | ✅ Longformer MLM, function/binary similarity, LSH | ✅ Full embedding pipelines |
+| **BasicBlockRank (BBR)** | ❌ | ✅ PageRank-inspired block ranking for artifact prioritization | ✅ Integrated into all workflows |
+| **Ingestion automation** | Manual | ✅ Interactive + headless Ghidra via Blackfyre | ✅ |
+| **Malware analysis** | ❌ | ✅ Capability mapping, clustering, behavioral similarity, enriched string NER | ✅ + family-level agent workflows |
+| **Vulnerability analysis** | ✅ Graph-based (Lab 3) | ✅ Unsafe APIs, reachability, patch-diff, N-day triage, code reuse | ✅ + agent-driven triage |
+| **Firmware analysis** | ❌ | ✅ Multi-binary ecosystem analysis, shared-library tracking | ✅ + multi-agent ecosystem workflows |
+| **LLM summarization & RAG** | ❌ | ✅ Function/binary summarization with KnowledgeRAG | ✅ |
+| **Agentic workflows** | ❌ | ✅ AutoGen + MCP agents for triage, YARA rules, patch analysis | ✅ Production agent pipelines |
 
 ### What's In Each
 
-**binql (full)** — long-term open-source goal:
-- Extraction → graph → analysis workflows (end-to-end)
-- Rich program-graph schema with cross-binary concepts
-- Cross-binary workflows (similarity, clustering, ecosystem views)
-- Malware analysis (capability mapping, family clustering, behavioral triage)
-- Vulnerability analysis (unsafe APIs, reachability, patch-diff, code reuse)
-- Firmware analysis (multi-binary ecosystems, shared-library tracking)
-- NL2GQL with guardrails and validation
-- Fine-tuning support for models trained on the binql ontology
-
-**binql-lite** — 4-day course materials:
-- Minimal but complete query layer over Neo4j
-- System-level questions as Cypher patterns
-- NL2GQL-style prompting (schema + examples + constraints)
-- Evidence-first workflow (inspect graph facts, don't trust free-form LLM answers)
-- Malware, vulnerability, and firmware analysis labs
-
 **binql-ultra-lite (binql-ul)** — this repository:
 - Graph-grounded questions + LLM-assisted querying
+- NL2GQL with schema, examples, and constraints
+- Vulnerability analysis: user-input detection, source-to-sink paths, complexity/dark-code analysis, LLM-powered triage reports
 - Workshop-friendly scaffolding and examples
 - Easy to extend (add questions, schema pieces, prompts)
+- Upcoming training: [Automating Reverse Engineering with AI/ML, Graphs, and LLM Agents](https://recon.cx/2026/en/trainingAutomatingREwithAIML.html) at **RECON 2026**
+
+**binql-lite** — 4-day course materials ([full syllabus](docs/syllabus/syllabus_4day_course.md)) (everything in binql-ul, plus):
+
+*Graph & cross-binary analysis:*
+- Full program-graph schema (functions, basic blocks, CFG, call graph, imports, strings, cross-binary relationships)
+- **BasicBlockRank (BBR)** — PageRank-inspired algorithm that ranks basic blocks by execution relevance, propagating importance to referenced imports, strings, and functions
+- Behavioral binary similarity via graph-sampled import call traces (compiler/architecture-stable fingerprints)
+- Scalable function and binary similarity using **locality-sensitive hashing (LSH)** and approximate nearest-neighbor search
+
+*Malware analysis:*
+- Capability mapping and structural detection of obfuscation/anti-analysis features
+- Malware family clustering using shared components and behavioral similarity
+- Enriched string nodes via NER (domains, IPs, URLs, mutexes, registry keys) for cross-family behavioral insights
+
+*Vulnerability analysis (beyond binql-ul):*
+- **Patch impact analysis** — diff unpatched vs. patched binaries to locate affected code regions and validate root-cause fixes
+- **N-day vulnerability triage** — treat CVEs as hypotheses, filter using structural/semantic constraints from actual execution paths
+- Code reuse and variant discovery across binaries via similarity edges
+
+*Firmware analysis:*
+- Multi-binary ecosystem analysis — treat firmware images as systems of interacting binaries rather than isolated programs
+- Shared-library and import-relationship mapping to uncover attack surfaces and high-risk components
+
+*Embeddings & neural approaches:*
+- **Longformer MLM** trained on binary-derived strings for context-aware embeddings
+- Function name prediction using BBR-weighted basic block embeddings + transformer decoder
+- Embeddings written back into the program graph for downstream retrieval and clustering
+
+*LLM & agent workflows:*
+- **KnowledgeRAG** — RAG grounded in the program graph for function-level and whole-binary summarization
+- **Fine-tuning LLaMA** on A6000 GPUs to improve NL2GQL accuracy for BinQL queries
+- **Agentic pipelines** using AutoGen and MCP for patch impact analysis, N-day triage, firmware ecosystem analysis, graph-grounded summarization, and automated YARA rule generation
+
+**binql (full)** — long-term open-source goal (everything in binql-lite, plus):
+- Production-grade extraction → graph → analysis workflows (end-to-end)
+- Production fine-tuned NL2GQL models with guardrails and validation
+- Full agent pipelines for automated large-scale triage and recursive malware family exploration
+- N-gram entity integration for graph-driven YARA signature synthesis
+- Designed for deployment beyond training environments
 
 </details>
 

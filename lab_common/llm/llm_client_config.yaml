@@ -1,0 +1,60 @@
+# =============================================================================
+# LLM Client Configuration
+# =============================================================================
+#
+# This file configures the LLM client used throughout the workshop.
+# The client supports two providers: OpenAI and Anthropic (Claude).
+#
+# --- QUICK START ---
+#
+#   1. Set `provider` to "openai" or "anthropic" below.
+#   2. Paste your API key into the `api_key` field.
+#   3. Run:  python -m lab_common.llm.client
+#
+# --- Provider and model auto-detection ---
+#
+#   When `model` is null, the default model for the chosen provider is used:
+#
+#     - provider: "anthropic"  → claude-sonnet-4-5-20250929
+#     - provider: "openai"     → gpt-4o-mini
+#
+#   When `provider` is also null, the client auto-detects from environment
+#   variables (see "Alternative" note below).
+#
+# --- API key resolution order ---
+#
+#   The client looks for the API key in this order:
+#     1. The `api_key` field below (recommended for workshop use)
+#     2. Environment variable: OPENAI_API_KEY or ANTHROPIC_API_KEY
+#
+#   ℹ️  Alternative: instead of putting the key here, you can export it as an
+#   environment variable:
+#     export OPENAI_API_KEY="sk-..."          # Linux/macOS
+#     export ANTHROPIC_API_KEY="sk-ant-..."   # Linux/macOS
+#   This is useful if you prefer not to store keys in files.
+#
+# --- Parameter reference ---
+#
+#   model:             LLM model name (null = auto-detect from provider)
+#                      Examples: "gpt-4o-mini", "gpt-4o", "claude-sonnet-4-5-20250929"
+#   provider:          "openai", "anthropic", or null (auto-detect from env vars)
+#   api_key:           Your API key (null = fall back to environment variable)
+#   system_prompt:     Default system prompt sent with every request
+#   temperature:       Sampling temperature (0 = deterministic, higher = more creative)
+#   max_tokens:        Maximum tokens in the LLM response
+#   top_p:             Nucleus sampling parameter (OpenAI only; ignored for Anthropic)
+#   frequency_penalty: Penalize repeated tokens (OpenAI only)
+#   presence_penalty:  Penalize tokens already present (OpenAI only)
+#
+# =============================================================================
+
+LLMClientConfig:
+  provider: null               # "openai" or "anthropic"
+  api_key: null                        # Paste your API key here, e.g. "sk-..." or "sk-ant-..."
+  model: null                          # null = use default model for the provider
+  system_prompt: "You are a helpful assistant."
+  temperature: 0
+  max_tokens: 12000
+  top_p: 1.0
+  frequency_penalty: 0.0
+  presence_penalty: 0.0

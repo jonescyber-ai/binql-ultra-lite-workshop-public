@@ -1,0 +1,83 @@
+# binql-lite Configuration File
+# Configuration for binary ingestion, BCC generation, and Neo4j connection
+
+# Neo4j connection settings
+# These can be overridden by environment variables or CLI arguments
+# Environment variables: NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD, NEO4J_DATABASE
+neo4j:
+  uri: "neo4j://127.0.0.1:7687"
+  user: "neo4j"
+  password: "12345678"
+  database: "neo4j"
+
+# BCC (Binary Context Container) storage settings
+bcc_storage:
+  # Directory to store generated BCC files (relative to ROOT_PROJECT_FOLDER_PATH)
+  # Set to null to use system temp directory
+  output_dir: "bccs"
+
+  # Keep generated BCCs after ingestion (true = persistent, false = cleanup temp files)
+  persistent: true
+
+  # Organize BCCs by SHA256 subdirectories (first 2 chars)
+  # Example: bccs/a1/a1b2c3d4e5f6...bcc
+  organize_by_hash: true
+
+  # Skip ingestion if binary (by SHA256) already exists in database
+  skip_if_exists: true
+
+  # Reuse existing BCC files instead of regenerating (saves Ghidra analysis time)
+  reuse_existing_bcc: true
+
+# BCC generation settings (passed to generate_bcc.py)
+bcc_generation:
+  # Ghidra analysis timeout per binary (seconds)
+  timeout: 300
+
+  # Number of parallel Ghidra processes (0 = auto-detect CPU count)
+  parallel: 0
+
+  # Ghidra headless verbosity level (0 = silent, 1 = normal, 2 = verbose)
+  verbosity: 1
+
+  # Skip binaries that fail analysis
+  skip_failures: true
+
+  # File size limits (bytes, null = no limit)
+  min_file_size: 1024        # 1 KB minimum
+  max_file_size: 104857600   # 100 MB maximum
+
+# Binary filtering for direct ingestion
+binary_filtering:
+  # File extensions to include (empty = all files)
+  include_extensions: []
+  # Example: [".so", ".elf", ""]  # "" matches files without extension
+
+  # File extensions to exclude
+  exclude_extensions: [".txt", ".log", ".json", ".md", ".xml", ".html", ".css", ".js"]
+
+  # Minimum file size to consider (bytes)
+  min_size: 1024
+
+  # Maximum file size to consider (bytes, null = no limit)
+  max_size: 104857600  # 100 MB
+
+  # Skip symbolic links
+  skip_symlinks: true
+
+  # Skip non-executable files (checks ELF header or execute permission)
+  require_executable: false
+
+# Metadata defaults for direct binary ingestion
+# These can be overridden by providing a metadata.json file
+metadata_defaults:
+  classification: "unknown"
+  vendor: null
+  product: null
+  firmware_version: null
+  tags: []
+  malware_family: null
+  # Ingest full decompiled C code into Neo4j (default: false)
+  # WARNING: Significantly increases storage (~10-100x) and ingestion time (~2-5x)
+  # Only enable for vulnerability analysis or CVE triage (Lab 15)
+  ingest_decompiled_code: false

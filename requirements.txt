@@ -1,0 +1,17 @@
+# binql-lite-workshop Python dependencies
+#
+# Install into your activated venv:
+#   python -m pip install --upgrade pip
+#   pip install -r requirements.txt
+#
+# Note: Blackfyre is installed separately in editable mode:
+#   cd ../Blackfyre/src/python && pip install -e .
+
+neo4j==6.0.3
+tqdm==4.67.3
+tiktoken==0.12.0
+openai==2.20.0
+omegaconf==2.3.0
+anthropic==0.79.0
+
+
