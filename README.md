@@ -1,6 +1,6 @@
 # binql-ultra-lite: Asking Questions About Software in Natural Language
 
-> **What if you could ask plain-English questions about compiled software — and get accurate, evidence-backed answers?**
+> **What if you — or an agent in your workflow — could ask plain-English questions about binaries (i.e., compiled software), malware, or vulnerabilities — and receive precise, evidence-backed answers?**
 
 That's the idea behind **binql-ultra-lite** (`binql-ul`): a hands-on workshop where you build a system that combines **graphs**, **large language models (LLMs)**, and **program analysis** to answer questions about binaries — without writing complex query syntax.
 
