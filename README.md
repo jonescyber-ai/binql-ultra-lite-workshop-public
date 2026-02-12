@@ -4,6 +4,8 @@
 
 That's the idea behind **binql-ultra-lite** (`binql-ul`): a hands-on workshop where you build a system that combines **graphs**, **large language models (LLMs)**, and **program analysis** to answer questions about binaries — without writing complex query syntax.
 
+<table><tr><td>📌 <sub><em>binql-ultra-lite</em> is the workshop edition of <b>binql</b>. A richer <em>binql-lite</em> powers our 4-day courses; a full open-source release is planned after the current training cycle (2026). <a href="#-additional-reading">Additional Reading</a> → <em>"Versions of binql"</em></sub></td></tr></table>
+
 ---
 
 ## 💡 The Idea
@@ -209,7 +211,7 @@ This approach grew out of material from **Black Hat** and **RECON** courses and 
 </details>
 
 <details>
-<summary><strong>How binql-ul fits into the bigger picture</strong></summary>
+<summary><strong>Versions of binql</strong></summary>
 
 This project is part of a family of related tools:
 
@@ -280,3 +282,5 @@ binql-ultra-lite (binql-ul)  →  binql-lite  →  binql (full)
 > **Short name:** We sometimes use **binql-ul** as shorthand for **binql-ultra-lite**.
 
 This repository contains the workshop materials and example code needed to follow along. As content is added/updated, this README will be expanded with additional exercises and troubleshooting notes.
+
+> ℹ️ **binql-ultra-lite** is a **workshop-scoped version** of binql — designed for a 3–4 hour hands-on session. For the **4-day courses** taught at Black Hat and RECON, we use **binql-lite**, which includes a richer schema, more labs, and deeper analysis workflows. A **full open-source release of binql** is planned after the current training cycle (2026).
