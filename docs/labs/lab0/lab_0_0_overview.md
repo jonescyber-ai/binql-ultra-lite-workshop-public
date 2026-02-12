@@ -16,6 +16,10 @@ What you will do:
 - Create and configure a Neo4j Desktop database (`binql`) with APOC + GDS
 - Validate that everything is working before starting Lab 1
 
+### Supported Operating Systems
+- Windows 11 or Linux (Ubuntu) — *Tested*
+- macOS — *It should work™*
+
 ---
 
 ### 📂 Student-Accessible Folders
@@ -25,6 +29,7 @@ What you will do:
 | `docs/` | Documentation and lab instructions |
 | `docs/labs/` | Student-facing lab writeups |
 | `docs/syllabus/` | Workshop syllabus |
+| `student_labs/` | Lab templates (where you write your code) |
 | `venv/` | Python virtual environment (you create this) |
 
 > ℹ️ Blackfyre is cloned into the repo root (`Blackfyre/` folder inside `binql-ultra-lite-workshop/`).
@@ -58,6 +63,44 @@ source venv/bin/activate
 | **Virtual environments** | Isolating Python dependencies so labs are reproducible |
 | **Graph DB prerequisites** | Ensuring Neo4j + required plugins are working upfront |
 | **Evidence-first validation** | Verifying every dependency with concrete commands/queries |
+
+## 📚 Additional Reading
+
+<details>
+<summary><strong>What is Blackfyre? (Standardized Binary Facts)</strong></summary>
+
+Reverse engineering tools like Ghidra or IDA Pro store program structure in proprietary formats. **Blackfyre** is an extraction layer that converts that structure into a standardized, tool-agnostic format called a **Binary Context Container (BCC)**.
+
+A BCC (shipped as a `.bcc` file) uses **Protocol Buffers** to serialize binary metadata, functions, basic blocks, and cross-references. In this workshop, Blackfyre provides the ground-truth facts that we load into the graph.
+
+</details>
+
+<details>
+<summary><strong>Why Neo4j? (Graph Databases for Code)</strong></summary>
+
+Code is inherently graph-structured: functions call functions, blocks branch to blocks. **Neo4j** is a native graph database that lets us store and query these relationships directly using **Cypher** (a graph query language). 
+
+Instead of flat text or relational tables, a graph lets us traverse complex execution paths across many binaries efficiently—answering questions like *"What is the reachability from this network input to that dangerous API?"*
+
+</details>
+
+<details>
+<summary><strong>Why LLMs? (Natural-Language Interfaces)</strong></summary>
+
+While graphs are powerful, writing Cypher queries by hand is slow and requires expertise. **Large Language Models (LLMs)** solve this by acting as a translation layer: you ask a question in English, and the LLM translates it into Cypher based on the graph's schema.
+
+This pattern is called **NL2GQL** (Natural Language to Graph Query Language). It grounds the LLM in the real facts of the graph, preventing hallucinations while making the analysis accessible.
+
+</details>
+
+<details>
+<summary><strong>Model Choice & Token Efficiency</strong></summary>
+
+We intentionally default to **gpt-4o-mini** (OpenAI) and **claude-sonnet-4-5-20250929** (Anthropic). These models provide the optimal balance of reasoning capability and **token-cost friendliness**, ensuring students can complete all labs without excessive API expenses.
+
+> 💰 **Disclaimer:** You are responsible for all API costs incurred. See the [LLM Token Usage Disclaimer](../../token_usage_disclaimer.md) for details.
+
+</details>
 
 ---
 

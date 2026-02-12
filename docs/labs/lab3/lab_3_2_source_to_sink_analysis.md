@@ -11,6 +11,7 @@
 ## Overview
 
 - **Goal:** Implement functions that find CFG paths from user-controlled input sources to dangerous sinks
+  > 💰 **Disclaimer:** This lab includes optional LLM-based classification which incurs API costs. You are responsible for these costs. By using the materials in this workshop, you agree to the terms described in the [LLM Token Usage Disclaimer](../../token_usage_disclaimer.md).
 - **Inputs:** Binaries ingested in Neo4j from the Lab 3 Setup
 - **Outputs:** Functions that return `SourceToSinkPath` objects identifying exploitable code flows
 

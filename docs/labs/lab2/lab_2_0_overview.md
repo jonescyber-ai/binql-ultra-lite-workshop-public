@@ -43,7 +43,8 @@ What you will do:
 ### Prerequisites
 
 - **Neo4j running**: The `binql` database instance should be started.
-- **LLM API access**: Configured in `lab_common/llm/` (instructor will provide details).
+- **LLM API access**: Configured in `lab_common/llm/` (see **Lab 0.4** for details).
+  > 💰 **Disclaimer:** You are responsible for all API costs incurred. By using the materials in this workshop, you agree to the terms described in the [LLM Token Usage Disclaimer](../../token_usage_disclaimer.md).
 
 ### Setup
 
