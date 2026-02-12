@@ -73,7 +73,7 @@ Then head to **Lab 0 — Environment Setup** (`docs/labs/lab0/lab_0_0_overview.m
 
 ### Operating System
 - Windows 11 or Linux (Ubuntu) — *Tested*
-- macOS™ — *Supported*
+- macOS — *It should work™*
 - **64-bit x86_64** architecture required
 
 ### Software and Access
