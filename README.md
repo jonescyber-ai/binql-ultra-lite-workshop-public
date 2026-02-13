@@ -12,7 +12,7 @@ That's the idea behind **binql-ultra-lite** (`binql-ul`): a hands-on workshop wh
 
 Programs are naturally **graph-structured** — functions call other functions, basic blocks branch to other blocks, binaries import shared libraries. When you load these structures into a graph database like Neo4j, questions like *"Which functions call `strcpy`?"* or *"Do any binaries share a vulnerable library?"* become straightforward queries.
 
-The catch is that writing those queries by hand — in a language called **Cypher** — requires expertise and doesn't scale. Every new question means crafting new syntax. That's where **LLMs** come in: instead of writing Cypher yourself, you ask your question in plain English, and the system translates it into a graph query automatically. The graph ensures the answer is grounded in real program structure, not hallucinated.
+The catch is that writing those queries by hand — in a language called **Cypher** — requires expertise and doesn't scale. Every new question means crafting new syntax. That's where **LLMs** come in: instead of writing Cypher yourself, you — or an agent in your workflow — ask your question in plain English, and the system translates it into a graph query automatically. The graph ensures the answer is grounded in real program structure, not hallucinated.
 
 ```
 1. EXTRACT          2. QUERY               3. ANSWER
