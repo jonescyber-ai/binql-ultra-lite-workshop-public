@@ -171,6 +171,8 @@ This same interface works for:
 - **LLM-powered agents** — query the graph programmatically in a loop, refine investigations automatically
 - **Systems of binaries** — ask cross-binary questions ("Which binaries in this firmware share a vulnerable library?") without writing a new query for each one
 
+> 💡 **Exploratory vs. Deterministic:** NL2GQL is ideal for exploratory discovery. However, for repeatable, production-grade analysis pipelines (like those in Lab 3), explicit Cypher queries are preferred to ensure consistent and deterministic outcomes.
+
 **Going further: fine-tuning.** This workshop uses schema-grounded prompting to translate English into Cypher. An advanced approach — out of scope here — is to **fine-tune** the LLM on domain-specific question–Cypher pairs derived from the graph ontology, which significantly improves translation accuracy for complex queries. The full binql system supports this; see the comparison table below.
 
 ### 4. Enabling systems-level reasoning
