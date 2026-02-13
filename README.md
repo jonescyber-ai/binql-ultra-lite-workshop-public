@@ -51,7 +51,8 @@ The labs follow the story above — build the graph, experience the query fricti
 By the end, you'll understand:
 - How compiled software can be represented as a **knowledge graph**
 - Why querying that graph is powerful but **manual Cypher doesn't scale**
-- How **NL2GQL** lets humans and agents ask questions in natural language
+- How **NL2GQL** lets humans and agents ask questions in natural language and receive grounded, accurate results
+- How the system prevents hallucinations by grounding LLMs in the **program graph**
 - How this enables **system-level reasoning** across many binaries
 
 No prior experience with graphs or LLMs is required — the labs build up from scratch.
@@ -165,6 +166,8 @@ You get:     bison_arm, libpng16, ...
 ```
 
 The graph ensures the answer is **grounded in real program structure** — not invented by the LLM. The LLM handles the syntax; the graph provides the facts.
+
+> 🛡️ **Trust and Accuracy:** A common concern with LLMs in security is "hallucination"—the model inventing facts. binql-ul mitigates this by using **NL2GQL** to ground every answer in a graph query. The LLM doesn't "answer" the question directly from its internal weights; instead, it generates a Cypher query that is executed against the ground-truth facts in Neo4j. If the graph doesn't contain the evidence, the system can't "hallucinate" an answer.
 
 This same interface works for:
 - **Human analysts** — ask questions quickly, iterate faster, no Cypher expertise needed
