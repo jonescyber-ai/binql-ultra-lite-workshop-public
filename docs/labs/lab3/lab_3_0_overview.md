@@ -60,6 +60,16 @@ source venv/bin/activate
 
 ## 🎯 Why Graph-Based Vulnerability Analysis?
 
+### NL2GQL vs. Explicit Cypher in Lab 3
+
+In Lab 2, you built an **NL2GQL pipeline** to ask exploratory questions in natural language. In Lab 3, however, we shift back to **explicit Cypher queries** implemented in Python.
+
+**Why the shift?**
+- **NL2GQL** is exceptional for **exploratory analysis**: "Are there any network APIs in this binary?", "What calls this function?". It lowers the barrier for discovery.
+- **Explicit Cypher** is preferred for **repeatable objectives**: When you have a specific analysis goal—like tracing paths from network input to a buffer overflow sink—using pre-defined queries ensures **consistent, deterministic, and reliable outcomes**. In a vulnerability research pipeline, you need the same analysis to produce the same results every time it runs.
+
+Lab 3 demonstrates how to build a robust, repeatable vulnerability analysis pipeline where the "heavy lifting" of graph traversal is handled by proven Cypher patterns, while the "high-level reasoning" is handled by LLMs in the final triage stage.
+
 Traditional vulnerability analysis approaches have significant limitations:
 
 - **Alert fatigue**: Static analyzers produce thousands of warnings with no prioritization
