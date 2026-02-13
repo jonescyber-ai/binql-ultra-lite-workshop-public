@@ -166,9 +166,11 @@ You get:     bison_arm, libpng16, ...
 
 The graph ensures the answer is **grounded in real facts**—not invented by the LLM. The LLM handles the syntax; the graph provides the evidence.
 
-> 🛡️ **Trust and Accuracy:** A common concern with LLMs is "hallucination." binql-ul mitigates this by using **NL2GQL** to ground every answer in a graph query. The LLM doesn't "answer" directly from its weights; it generates a verifiable Cypher query that is executed against the ground-truth facts in Neo4j.
+> 🛡️ **Trust and Accuracy:** A common concern with LLMs in security is "hallucination"—the model inventing facts. binql-ul mitigates this by using **NL2GQL** to ground every answer in a graph query. The LLM doesn't "answer" the question directly from its internal weights; instead, it generates a Cypher query that is executed against the ground-truth facts in Neo4j. If the graph doesn't contain the evidence, the system returns no results rather than "making up" an answer. This transforms the problem from *trusting a black box* to *verifying a generated query*.
 
-> 💡 **Exploratory vs. Deterministic:** NL2GQL is ideal for exploratory discovery. However, for repeatable, production-grade analysis pipelines (like those in Lab 3), explicit Cypher queries are preferred to ensure consistent and deterministic outcomes.
+> 💡 **Exploratory vs. Deterministic:**
+> - **Exploratory (NL2GQL):** Ideal for "speed-to-insight" during discovery. When a human or agent needs to pivot quickly ("Are there any network APIs?", "What calls this function?"), NL2GQL handles the syntax burden.
+> - **Deterministic (Explicit Cypher):** Essential for "production-grade" pipelines. For repeatable objectives like the vulnerability analysis in Lab 3, we use pre-defined Cypher queries. This ensures consistent, reliable outcomes that are unaffected by LLM non-determinism, providing the stable foundation needed for high-confidence security reporting.
 
 </details>
 
