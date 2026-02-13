@@ -76,18 +76,6 @@ This year’s course expands beyond earlier versions by introducing graph-driven
 
 ---
 
-## Why This Is Cool / Why I Want to Present It
-
-Reverse engineering has always been powerful but painstakingly manual — staring at disassembly, renaming functions, sifting through strings, and repeating the same workflows across binaries. What’s cool about this course is that it shows how to bridge traditional RE with modern AI/ML techniques to automate those tasks and scale them from a single binary to entire malware families or firmware ecosystems.
-
-The introduction of graphs and natural-language graph queries (NL2GQL) makes binary analysis interactive in a way reverse engineers have never had before — students can ask questions like “show me all functions across this firmware that use unsafe string operations” and get precise, structured answers. Combined with transformer embeddings and KnowledgeRAG, students will see how LLMs can move beyond hype into practical, grounded RE workflows like signature generation, malware triage, and vulnerability reporting.
-
-This year goes further by introducing agentic LLM approaches with AutoGen, where models are orchestrated into autonomous, tool-using agents. These agents can plan, reason, and interact with disassemblers and graph databases, enabling adaptive automation such as recursive exploration of malware families or large-scale binary triage.
-
-I want to present this course because it equips practitioners with hands-on tools (Blackfyre, BinQL, KnowledgeRAG, AutoGen agents) they can use immediately, while also preparing them for the next wave of automation in reverse engineering.
-
----
-
 ## Bio
 
 Dr. Malachi Jones is a Principal Cybersecurity AI/LLM Researcher and Manager at Microsoft, where he currently leads a team advancing red team agent autonomy within Microsoft Security AI (MSECAI). His present focus is on building autonomous red team agents, while his earlier work centered on fine-tuning large language models (LLMs) for security tasks and developing reverse engineering capabilities in Security Copilot.
