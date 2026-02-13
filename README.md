@@ -110,9 +110,20 @@ Head to **Lab 0 — Environment Setup** ([docs/labs/lab0/lab_0_0_overview.md](do
 ## 📚 Additional Reading
 
 <details>
-<summary><strong>The full story: from binaries to natural-language answers</strong></summary>
+<summary><strong>The Story: Why binql and Graph-Grounded Analysis?</strong></summary>
 
-### 1. Programs are graphs — use them
+### 1. Beyond "one binary at a time"
+
+Historically, reverse engineering has centered on analyzing individual binaries one at a time. Tools like **Ghidra**, **IDA Pro**, and **Binary Ninja** reflect this: you load a single executable, recover its internal structure, and reason about it in isolation.
+
+But in practice, most security questions are **system-level**:
+- How do multiple binaries in a firmware image **interact**?
+- Do different binaries **share vulnerable code** (common libraries, copied functions)?
+- How does behavior emerge across an **entire software family**?
+
+**binql** addresses this by shifting from isolated analysis to system-level reasoning. By representing systems of binaries as a unified graph, it makes cross-binary relationships explicit—allowing you to reason about systems *as systems*.
+
+### 2. Programs are graphs — use them
 
 Programs are naturally **graph-structured**. The representations that compilers, disassemblers, and analyzers already produce are graphs:
 
@@ -120,24 +131,18 @@ Programs are naturally **graph-structured**. The representations that compilers,
 |----------------|-------|-------|--------|
 | **Call graph** | Functions | "calls" relationships | Who calls whom across the binary |
 | **Control flow graph (CFG)** | Basic blocks | Branch / fall-through edges | How execution flows within a function |
-| **Abstract syntax tree (AST)** | Syntax nodes (expressions, statements) | Parent–child edges | Source-code structure (pre-compilation) |
+| **Abstract syntax tree (AST)** | Syntax nodes | Parent–child edges | Source-code structure |
 
-In reverse engineering we focus on **call graphs** and **CFGs** because they are what we can recover from compiled binaries. But the same graph-grounded approach extends naturally to **source code** (via ASTs), **intermediate representations**, and even **cross-language** analysis — the underlying principle is the same: represent program structure as connected nodes and relationships, then query it.
+When you load these structures into a graph database like Neo4j, powerful questions become straightforward queries:
+- **"Which functions call `strcpy`?"** — follow call edges in the call graph.
+- **"Do any binaries share the same vulnerable library?"** — match import patterns across binaries.
+- **"What's the path from user input to a dangerous API?"** — traverse control flow edges in the CFG.
 
-> 🌐 **Beyond reverse engineering:** The graph + NL2GQL pattern you learn here is domain-agnostic. Swap out the binary program graph for an attack graph, a network topology, or a cloud infrastructure model — the same approach (structure → query → automate) applies. See the table in the main README for specific examples.
+Without a graph, answering these requires manually piecing together information from separate tools. With a graph, they become one query.
 
-When you load binaries into a graph database like Neo4j, powerful questions become straightforward queries:
+### 3. The challenge: the query bottleneck
 
-- **"Which functions call `strcpy`?"** — follow call edges in the call graph
-- **"Do any binaries share the same vulnerable library?"** — match import patterns across binaries
-- **"What's the path from user input to a dangerous API?"** — traverse control flow edges in the CFG
-- **"Which basic blocks are reachable from the entry point?"** — walk the CFG from the entry block
-
-Without a graph, answering these questions requires manually piecing together information from separate tools. With a graph, they become one query.
-
-### 2. The challenge: querying the graph
-
-Graph queries are powerful — but they require learning **Cypher** (Neo4j's query language). Every question you want to ask means hand-crafting a query like:
+Graph queries are powerful—but they require learning **Cypher** (Neo4j's query language). Every question you want to ask means hand-crafting a query like:
 
 ```cypher
 MATCH (b:Binary)-[:HAS_FUNCTION]->(f:Function)
@@ -146,84 +151,24 @@ WHERE imp.name = 'strcpy'
 RETURN b.name, f.name, imp.name
 ```
 
-This works, but it doesn't scale:
+This works, but it doesn't scale. Analysts spend more effort on syntax than on analysis, and LLM-powered agents can't write reliable Cypher without deep schema knowledge.
 
-- **For analysts:** Writing Cypher takes time and expertise. You spend more effort on syntax than on analysis.
-- **For automation:** An LLM-powered agent can't write reliable Cypher without deep schema knowledge.
-- **For systems of binaries:** As you add more binaries — firmware images, software families, build variants — the number of questions grows faster than you can write queries.
+### 4. LLMs as a natural-language interface
 
-### 3. Use LLMs as a natural-language interface
-
-**NL2GQL** (Natural Language → Graph Query Language) solves this: you ask a question in plain English, the system translates it to Cypher, executes it against the graph, and returns the results.
+**NL2GQL** (Natural Language → Graph Query Language) solves this bottleneck: you (or an agent) ask a question in plain English, and the system translates it to Cypher and executes it against the graph.
 
 ```
 You ask:    "Which binaries import the strcpy function?"
-
 NL2GQL:      MATCH (b:Binary)-[:IMPORTS_SYMBOL]->(i:ImportSymbol)
              WHERE i.name = 'strcpy' RETURN b.name
-
 You get:     bison_arm, libpng16, ...
 ```
 
-The graph ensures the answer is **grounded in real program structure** — not invented by the LLM. The LLM handles the syntax; the graph provides the facts.
+The graph ensures the answer is **grounded in real facts**—not invented by the LLM. The LLM handles the syntax; the graph provides the evidence.
 
-> 🛡️ **Trust and Accuracy:** A common concern with LLMs in security is "hallucination"—the model inventing facts. binql-ul mitigates this by using **NL2GQL** to ground every answer in a graph query. The LLM doesn't "answer" the question directly from its internal weights; instead, it generates a Cypher query that is executed against the ground-truth facts in Neo4j. If the graph doesn't contain the evidence, the system can't "hallucinate" an answer.
-
-This same interface works for:
-- **Human analysts** — ask questions quickly, iterate faster, no Cypher expertise needed
-- **LLM-powered agents** — query the graph programmatically in a loop, refine investigations automatically
-- **Systems of binaries** — ask cross-binary questions ("Which binaries in this firmware share a vulnerable library?") without writing a new query for each one
+> 🛡️ **Trust and Accuracy:** A common concern with LLMs is "hallucination." binql-ul mitigates this by using **NL2GQL** to ground every answer in a graph query. The LLM doesn't "answer" directly from its weights; it generates a verifiable Cypher query that is executed against the ground-truth facts in Neo4j.
 
 > 💡 **Exploratory vs. Deterministic:** NL2GQL is ideal for exploratory discovery. However, for repeatable, production-grade analysis pipelines (like those in Lab 3), explicit Cypher queries are preferred to ensure consistent and deterministic outcomes.
-
-**Going further: fine-tuning.** This workshop uses schema-grounded prompting to translate English into Cypher. An advanced approach — out of scope here — is to **fine-tune** the LLM on domain-specific question–Cypher pairs derived from the graph ontology, which significantly improves translation accuracy for complex queries. The full binql system supports this; see the comparison table below.
-
-### 4. Enabling systems-level reasoning
-
-The real payoff comes when you move beyond single-binary analysis. Traditional reverse engineering is **one binary at a time** — load an executable, recover its structure, reason about it in isolation. But real-world security questions are **system-level**:
-
-- How do multiple binaries in a firmware image **interact**?
-- Do different binaries **share vulnerable code** (common libraries, copied functions)?
-- What **attack surface** does an entire software system expose?
-
-A graph database makes these cross-binary relationships explicit. Combined with natural-language querying, you can ask system-level questions as easily as single-binary ones — and get answers backed by the actual program structure.
-
-</details>
-
-<details>
-<summary><strong>Why binql? The problem with binary-at-a-time analysis</strong></summary>
-
-### The Traditional Model
-
-Historically, reverse engineering has centered on analyzing individual binaries one at a time. Disassembler tools such as **Ghidra**, **IDA Pro**, and **Binary Ninja** reflect this model: load a single executable, recover its internal structure, and reason about it in isolation.
-
-Programs begin as human-readable source code and are compiled into machine code that computers execute. That compilation process is inherently lossy, discarding much of the original structure and intent. Disassemblers work in reverse to recover enough structure to make binaries readable and analyzable again — though the result remains incomplete.
-
-### The Gap: System-Level Questions
-
-In practice, many security questions are **system-level**. Analysts often care about:
-- How multiple binaries **interact** or **relate** to one another
-- How binaries form **families** (malware variants, shared codebases)
-- How behavior emerges across an **entire system**
-
-But answering those questions requires piecing together many separate analyses, each based on incomplete information.
-
-### How binql Addresses This
-
-**binql** addresses this gap using **graph analysis** — specifically, the challenge of reasoning across many partial analyses to answer system-level questions.
-
-Because programs are naturally graph-structured — control flow, call relationships, data dependencies, and component interactions — binql:
-1. **Consumes disassembler output** (Ghidra in this case)
-2. **Represents systems of binaries as a unified graph** backed by Neo4j
-3. **Makes cross-binary, system-level structure explicit**
-
-This makes it easier to reason about systems *as systems* rather than as disconnected executables.
-
-### Natural Language on Top
-
-On top of this representation, binql allows humans and agents to **ask high-level questions about binaries and systems in natural language**, shifting effort away from query syntax and toward analysis.
-
-This approach grew out of material from **Black Hat** and **RECON** courses and translates well into a **4-hour hands-on workshop**. **binql-ultra-lite is a stepping stone toward a future full open-source release of binql** — the goal is to make the core concepts usable and teachable now, while building toward a more complete production-grade system.
 
 </details>
 
