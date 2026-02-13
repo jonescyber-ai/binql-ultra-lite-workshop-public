@@ -221,7 +221,7 @@ This makes it easier to reason about systems *as systems* rather than as disconn
 
 ### Natural Language on Top
 
-On top of this representation, binql allows analysts to **ask high-level questions about binaries and systems in natural language**, shifting effort away from query syntax and toward analysis.
+On top of this representation, binql allows humans and agents to **ask high-level questions about binaries and systems in natural language**, shifting effort away from query syntax and toward analysis.
 
 This approach grew out of material from **Black Hat** and **RECON** courses and translates well into a **4-hour hands-on workshop**. **binql-ultra-lite is a stepping stone toward a future full open-source release of binql** — the goal is to make the core concepts usable and teachable now, while building toward a more complete production-grade system.
 
