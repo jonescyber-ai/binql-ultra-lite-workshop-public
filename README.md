@@ -234,6 +234,10 @@ The graph ensures the answer is **grounded in real facts**—not invented by the
 Question → Decompose → Bounded query chain → Evidence → (Optional) Summary
 ```
 
+**Important scope note (this workshop):** we focus on **read-only** graph operations.
+- Treat the graph database as a **source of truth** for extracted program facts.
+- Generated queries should be safe: bounded (`LIMIT`/depth caps), validated, and **non-mutating**.
+
 In this workshop, we start with the simplest (and extremely useful) case:
 - **one question → one generated query → results**
 
@@ -259,6 +263,15 @@ In real investigations, you usually need a workflow:
 - Incomplete representations (indirect calls, partial dataflow)
 - Query cost/performance (must enforce bounds)
 - Correctness and trust (schema grounding + validation)
+
+**Beyond this workshop (advanced direction): write-back analytics**
+- In richer BinQL systems, analysis isn’t only “read facts” — it can also **persist derived artifacts** back into the graph.
+- Examples of write-back artifacts:
+  - reachability summaries, rankings, and risk scores
+  - discovered source/sink pairs and validated paths
+  - analyst annotations, triage decisions, and tags
+  - normalized entities extracted from strings (domains, file paths, mutexes)
+- Why this helps: some questions become easier and faster when the graph contains **precomputed analytics** and **human/agent context**.
 
 This is why BinQL is best thought of as a **system** (schema + guardrails + pipeline), not a single prompt.
 
