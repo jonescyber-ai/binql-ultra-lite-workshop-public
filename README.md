@@ -4,7 +4,32 @@
 
 That's the idea behind **binql-ultra-lite** (`binql-ul`): a hands-on workshop where you build a system that combines **graphs**, **large language models (LLMs)**, and **program analysis** to answer questions about binaries — without writing complex query syntax.
 
-<table><tr><td>📌 <sub><em>binql-ultra-lite</em> is the workshop edition of <b>binql</b>. A richer <em>binql-lite</em> powers our 4-day courses (<a href="https://recon.cx/2026/en/trainingAutomatingREwithAIML.html">upcoming: Automating Reverse Engineering with AI/ML, Graphs, and LLM Agents — RECON 2026</a> · <a href="docs/syllabus/syllabus_4day_course.md">4-day course syllabus</a>); a full open-source release is planned after the current training cycle (2026). <a href="#-additional-reading">Additional Reading</a> → <em>"Versions of binql"</em></sub></td></tr></table>
+<table><tr><td>📌 <sub><em>binql-ultra-lite</em> is the workshop edition of <b>binql</b>. A richer <em>binql-lite</em> powers our 4-day courses (<a href="https://recon.cx/2026/en/trainingAutomatingREwithAIML.html">upcoming: Automating Reverse Engineering with AI/ML, Graphs, and LLM Agents — RECON 2026</a> · <a href="docs/syllabus/syllabus_4day_course.md">4-day course syllabus</a>); a full open-source release is planned after the current training cycle (2026). See <em>Additional Reading</em> → <em>"Versions of binql"</em></sub></td></tr></table>
+
+---
+
+## ⭐ Start Here
+
+Go to **Lab 0 — Environment Setup** to validate your environment and credentials:
+- [docs/labs/lab0/lab_0_0_overview.md](docs/labs/lab0/lab_0_0_overview.md)
+
+If you're reading this asynchronously, completing Lab 0 is the fastest way to get oriented.
+
+---
+
+## ✅ No Prior Experience Required
+
+This workshop is designed to be accessible to a wide audience:
+
+- **New to graphs?** Lab 1 introduces nodes, relationships, properties, and basic queries from scratch.
+- **New to LLMs?** Lab 2 shows how NL2GQL works and how to make it reliable (grounding + validation).
+- **New to reverse engineering?** We use pre-processed binaries (**BCC** files; precomputed analysis artifacts) so you can focus on analysis instead of tool setup.
+
+**Not an RE specialist?** That’s totally fine.
+- We use reverse engineering as a **concrete, hands-on application** of a broader idea: **graph-grounded security analysis + natural-language querying (NL2GQL)**.
+- The same pattern generalizes to other security domains (IAM graphs, attack paths, incident correlation, supply chain, etc.).
+
+If you can run Python and follow step-by-step lab instructions, you can complete the workshop.
 
 ---
 
@@ -19,6 +44,8 @@ The catch is that writing those queries by hand — in a language called **Cyphe
    Binary code  →      Graph database  →      Natural language
    (Ghidra)            (Neo4j)                (LLM + NL2GQL)
 ```
+
+**Workshop note:** we use pre-processed **BCC** artifacts so you can focus on graph querying and NL2GQL without needing to run extraction tooling during the workshop.
 
 > **Structure first, then automate.** Organize program facts into a graph, then let LLMs handle the query syntax so you can focus on analysis.
 >
@@ -49,13 +76,13 @@ The labs follow the story above — build the graph, experience the query fricti
 | **Lab 3** | Use the graph to find vulnerabilities: unsafe APIs, exploit paths, complex code — across systems of binaries |
 
 By the end, you'll understand:
-- How compiled software can be represented as a **knowledge graph**
+- How compiled software can be represented as a **program graph** (a security-focused knowledge graph)
 - Why querying that graph is powerful but **manual Cypher doesn't scale**
 - How **NL2GQL** lets humans and agents ask questions in natural language and receive grounded, accurate results
 - How the system prevents hallucinations by grounding LLMs in the **program graph**
 - How this enables **system-level reasoning** across many binaries
 
-No prior experience with graphs or LLMs is required — the labs build up from scratch.
+**Success looks like:** you can ask 3–5 RE questions in English, inspect the generated Cypher, and explain the answer as **graph-backed evidence**.
 
 ---
 
@@ -72,6 +99,19 @@ cd binql-ultra-lite-workshop
 > ℹ️ If you clone into a different folder name, that's fine — just `cd` into your cloned folder.
 
 Then head to **Lab 0 — Environment Setup** ([docs/labs/lab0/lab_0_0_overview.md](docs/labs/lab0/lab_0_0_overview.md)) to get started.
+
+### Before you begin (quick checklist)
+
+- ✅ Neo4j Desktop installed; you can create/start a local database
+- ✅ Python **3.12** available
+- ✅ An LLM API key ready (OpenAI or Anthropic) — used in Labs 2–3
+
+### Repository map (where to look)
+
+- `docs/labs/` — step-by-step lab instructions
+- `lab_common/` — shared Python code used across labs (BinQL/NL2GQL scaffolding)
+- `dataset/` — sample artifacts used in labs (including `.bcc` files)
+- `Blackfyre/` — extraction tooling and utilities (not required for most workshop runs)
 
 ---
 
@@ -93,11 +133,21 @@ Then head to **Lab 0 — Environment Setup** ([docs/labs/lab0/lab_0_0_overview.m
 
 To keep the workshop accessible and **token-cost friendly**, we intentionally use **gpt-4o-mini** (OpenAI) and **claude-sonnet-4-5-20250929** (Anthropic) as defaults. These models offer a powerful balance of reasoning capability and low cost for student use.
 
-### No Prior Experience Required
+### Common gotchas (read this if setup is painful)
 
-- **New to graphs?** Lab 1 introduces graph concepts from scratch — nodes, relationships, properties, and queries.
-- **New to LLMs?** Lab 2 walks you through how LLMs generate queries and how to make them reliable.
-- **New to reverse engineering?** The workshop uses pre-processed binaries (BCC files) so you can focus on analysis, not tool setup.
+- **Neo4j Desktop vs. Neo4j Server:** the labs assume you can create/start a local DB and have its Bolt URL + credentials.
+- **API keys:** if requests fail, confirm your provider key is loaded where Lab 0.4 expects it.
+- **Architecture:** `x86_64` is required; ARM/macOS can be tricky due to binary-analysis dependencies.
+- **First run time:** the first graph load/function extraction can take a while; later runs are faster.
+
+---
+
+## ❓ Quick FAQ
+
+- **Do I need to be a reverse engineer?** No. RE is the concrete example, but the graph + NL2GQL pattern generalizes to many security domains.
+- **Do I need to run Ghidra or extraction tooling?** Not for most workshop runs. We provide **BCC** artifacts so you can focus on querying and workflows.
+- **Will this cost money?** Possibly. Labs that call LLM APIs use your own key; you’re responsible for any provider costs.
+- **Do I need to know Cypher?** Not upfront. You’ll learn basic query patterns in Lab 1, and NL2GQL reduces the syntax burden.
 
 ---
 
@@ -106,6 +156,7 @@ To keep the workshop accessible and **token-cost friendly**, we intentionally us
 Head to **Lab 0 — Environment Setup** ([docs/labs/lab0/lab_0_0_overview.md](docs/labs/lab0/lab_0_0_overview.md)) to get your environment configured and validated. **Lab 0 is pre-work — complete it before the workshop starts** so we can jump straight into Lab 1 on day one.
 
 ---
+
 
 ## 📚 Additional Reading
 
@@ -171,6 +222,59 @@ The graph ensures the answer is **grounded in real facts**—not invented by the
 > 💡 **Exploratory vs. Deterministic:**
 > - **Exploratory (NL2GQL):** Ideal for "speed-to-insight" during discovery. When a human or agent needs to pivot quickly ("Are there any network APIs?", "What calls this function?"), NL2GQL handles the syntax burden.
 > - **Deterministic (Explicit Cypher):** Essential for "production-grade" pipelines. For repeatable objectives like the vulnerability analysis in Lab 3, we use pre-defined Cypher queries. This ensures consistent, reliable outcomes that are unaffected by LLM non-determinism, providing the stable foundation needed for high-confidence security reporting.
+
+</details>
+
+<details>
+<summary><strong>North Star: Where BinQL is headed (and the challenges)</strong></summary>
+
+### ⭐ The north star: graph-first workflows (beyond one-shot NL2GQL)
+
+```text
+Question → Decompose → Bounded query chain → Evidence → (Optional) Summary
+```
+
+In this workshop, we start with the simplest (and extremely useful) case:
+- **one question → one generated query → results**
+
+That works surprisingly often—but it’s only step 1.
+
+**North star:** using the graph to answer your question even when there is *no single clean query*.
+
+In real investigations, you usually need a workflow:
+
+- 🧩 **Decompose the question** into sub-questions the graph can answer.
+  - Example: “Can network input reach `memcpy`?” becomes:
+    1) what are the network entry points?
+    2) what’s reachable from those entry points (bounded depth)?
+    3) which of those reachable functions call a sink?
+- 🧭 **Run multiple small, bounded queries** and combine results (set intersection / path extraction / ranking).
+- 💬 **Use dialogue** (human ↔ agent) to clarify missing assumptions:
+  - which entry point class (network/file/IPC)?
+  - direct calls only or wrappers too?
+  - any path or shortest path? depth/time budget?
+
+⚠️ **Key challenges BinQL is working toward solving:**
+- Underspecified questions (requires clarifications)
+- Incomplete representations (indirect calls, partial dataflow)
+- Query cost/performance (must enforce bounds)
+- Correctness and trust (schema grounding + validation)
+
+This is why BinQL is best thought of as a **system** (schema + guardrails + pipeline), not a single prompt.
+
+### 🔧 Fine-tuning: why it helps NL2GQL
+
+Even with good prompts and schema grounding, general-purpose LLMs can still:
+- drift from your schema naming conventions,
+- choose inefficient query shapes,
+- or “nearly” match the intended pattern but miss a key constraint.
+
+In the more advanced BinQL variants (see *Versions of binql* below), we use **fine-tuning** to improve NL2GQL reliability by teaching the model:
+- the *exact* schema vocabulary (labels/edges/properties),
+- preferred/efficient query templates,
+- and common RE question → Cypher mappings.
+
+Fine-tuning doesn’t remove the need for guardrails, but it reduces the error rate and the number of retries needed.
 
 </details>
 
