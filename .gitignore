@@ -1,3 +1,15 @@
 # Internal docs are intentionally committed for maintainers/agents.
 # Review/redact this folder before any public release.
 # internal_docs/
+
+# JetBrains / IDE
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# OS noise
+.DS_Store
