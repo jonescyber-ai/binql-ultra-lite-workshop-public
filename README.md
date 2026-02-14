@@ -4,6 +4,8 @@
 
 That's the idea behind **binql-ultra-lite** (`binql-ul`): a hands-on workshop where you build a system that combines **graphs**, **large language models (LLMs)**, and **program analysis** to answer questions about binaries — without writing complex query syntax.
 
+While reverse engineering is our concrete application, the core pattern (**graph-grounded security analysis + natural-language querying / NL2GQL**) generalizes across cybersecurity domains (cloud/IAM graphs, incident correlation, attack paths, supply chain, and more).
+
 <table><tr><td>📌 <sub><em>binql-ultra-lite</em> is the workshop edition of <b>binql</b>. A richer <em>binql-lite</em> powers our 4-day courses (<a href="https://recon.cx/2026/en/trainingAutomatingREwithAIML.html">upcoming: Automating Reverse Engineering with AI/ML, Graphs, and LLM Agents — RECON 2026</a> · <a href="docs/syllabus/syllabus_4day_course.md">4-day course syllabus</a>); a full open-source release is planned after the current training cycle (2026). See <em>Additional Reading</em> → <em>"Versions of binql"</em></sub></td></tr></table>
 
 ---
