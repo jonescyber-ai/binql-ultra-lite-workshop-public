@@ -1,4 +1,4 @@
-# binql-ultra-lite: Asking Questions About Software in Natural Language
+# binql-ultra-lite: Asking Evidence-Backed Questions About Binaries in Natural Language
 
 > **What if you — or an agent in your workflow — could ask plain-English questions about binaries (i.e., compiled software), malware, or vulnerabilities — and receive precise, evidence-backed answers?**
 
