@@ -48,9 +48,21 @@ What you will do:
 
 ### Setup
 
+Activate the virtual environment before starting:
+
+#### Linux/macOS
+
 ```bash
 source venv/bin/activate
 ```
+
+#### Windows (PowerShell)
+
+```powershell
+.\venv\Scripts\Activate.ps1
+```
+
+> 📝 **Note:** All commands below assume the virtual environment is already activated. You only need to activate it once per terminal session.
 
 ---
 
@@ -90,8 +102,6 @@ Lab 2 uses its own dataset with binaries for NL2GQL testing. You need to reset t
 #### Linux/macOS
 
 ```bash
-source venv/bin/activate
-
 # Reset database and ingest the Bison binary
 python -m lab_common.binql.binql_ul \
   --reset \
@@ -105,8 +115,6 @@ python -m lab_common.binql.binql_ul \
 #### Windows (PowerShell)
 
 ```powershell
-.\venv\Scripts\Activate.ps1
-
 # Reset database and ingest the Bison binary
 python -m lab_common.binql.binql_ul `
   --reset `
@@ -120,16 +128,15 @@ python -m lab_common.binql.binql_ul `
 ### Step 2: Verify Neo4j connectivity
 
 ```bash
-source venv/bin/activate
 python -m lab_common.binql.binql_ul --check-db
 ```
 
 ### Step 3: Verify data was ingested
 
-Open Neo4j Browser and run:
+Use the binql-lite CLI to list the ingested binaries:
 
-```cypher
-MATCH (b:Binary) RETURN b.name, b.classification LIMIT 10;
+```bash
+python -m lab_common.binql.binql_ul --list-binaries
 ```
 
 You should see 6 binaries listed (1 bison_arm + 5 benign corpus).
@@ -191,7 +198,6 @@ Outputs:
 **How to run your NL2GQL implementation:**
 
 ```bash
-source venv/bin/activate
 python -m student_labs.lab2.nl2gql --query "Find all benign binaries"
 ```
 
