@@ -33,7 +33,7 @@ Open `student_labs/lab2/prompt_builder.py` and find the stub markers:
 You need to implement **3 functions** (the template already provides imports and constants):
 
 1. **`format_relationships_for_llm(relationships)`** — Format relationship metadata into readable text
-2. **`format_nodes_for_llm(nodes)`** — Format node metadata with properties and sample values
+2. **`format_nodes_for_llm(nodes, descriptions=None)`** — Format node metadata with properties and sample values
 3. **`build_cypher_generation_prompt(schema_text)`** — Build the complete system prompt
 
 > 📖 **See the "📚 Implementation Guide" section below for detailed guidance on implementing each function.**
@@ -126,12 +126,13 @@ def format_relationships_for_llm(relationships: list) -> str:
 Format node metadata with properties and sample values.
 
 ```python
-def format_nodes_for_llm(nodes: list) -> str:
+def format_nodes_for_llm(nodes: list, descriptions: dict = None) -> str:
     """
     Format node metadata into LLM-friendly text.
 
     Args:
         nodes: List of node records from APOC (optionally enriched with sample values).
+        descriptions: Optional dict mapping property names to descriptions.
 
     Returns:
         Formatted string describing node labels and their properties.

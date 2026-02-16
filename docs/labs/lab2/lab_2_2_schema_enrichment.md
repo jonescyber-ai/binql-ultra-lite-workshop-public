@@ -183,9 +183,9 @@ Failed:      0
 
 ## What the Tests Validate
 
+- ✅ All required functions are importable and callable
 - ✅ `get_sample_values()` returns a list of values for known properties
 - ✅ `enrich_node_properties()` adds `sampleValues` to each record
-- ✅ Enriched schema contains actual values from the database
 
 ---
 

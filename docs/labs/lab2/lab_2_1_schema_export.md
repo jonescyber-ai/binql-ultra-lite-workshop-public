@@ -158,7 +158,7 @@ Export constraints and indexes as Cypher DDL statements.
 ```python
 def export_schema_ddl(driver, database: str) -> str:
     """
-    Export constraints and indexes as Cypher DDL.
+    Export constraints and indexes as Cypher DDL statements.
 
     Uses APOC's apoc.export.cypher.schema() to get schema as Cypher statements.
 
@@ -210,10 +210,10 @@ Failed:      0
 
 ## What the Tests Validate
 
-- ✅ Script can connect to Neo4j
+- ✅ All required functions are importable and callable
 - ✅ `export_node_metadata()` returns a list of node property records
 - ✅ `export_relationship_metadata()` returns a list of relationship records
-- ✅ `export_schema_ddl()` returns a non-empty string with DDL statements
+- ✅ `export_schema_ddl()` returns a string with DDL statements
 
 ---
 

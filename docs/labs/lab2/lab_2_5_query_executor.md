@@ -290,11 +290,13 @@ Failed:      0
 
 ## What the Tests Validate
 
-- ✅ `execute_cypher_query()` returns success with valid queries
-- ✅ `execute_cypher_query()` returns error info with invalid queries
+- ✅ All required functions are importable and callable
+- ✅ `execute_cypher_query()` returns `success=True` with valid queries, including a `results` list and non-negative `count`
+- ✅ `execute_cypher_query()` returns `success=False` with a non-empty `error` message for invalid Cypher (verified against a live Neo4j connection)
 - ✅ `build_refinement_prompt()` includes all required context
-- ✅ `execute_with_retry()` retries on failure
-- ✅ `execute_with_retry()` returns success after LLM correction
+- ✅ `execute_with_retry()` returns `success=True`, completes in 1 attempt, and includes a `results` list for valid queries
+
+> ⚠️ **Tests 2, 3, and 5 require a running Neo4j instance.** They will fail if Neo4j is unavailable.
 
 ---
 
