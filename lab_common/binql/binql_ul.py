@@ -2233,9 +2233,9 @@ def main() -> None:
         elif args.list_binaries:
             # List all ingested Binary nodes
             try:
-                logger.info("=" * 60)
-                logger.info("INGESTED BINARIES")
-                logger.info("=" * 60)
+                print("=" * 60)
+                print("INGESTED BINARIES")
+                print("=" * 60)
 
                 with gdb_driver.session(database=args.database) as session:
                     result = session.run("""
@@ -2255,14 +2255,14 @@ def main() -> None:
                     binaries = list(result)
 
                     if not binaries:
-                        logger.info("\nNo binaries found in database.\n")
+                        print("\nNo binaries found in database.\n")
                     else:
-                        logger.info(f"\nFound {len(binaries)} binary(ies):\n")
-                        logger.info("-" * 140)
-                        logger.info(
+                        print(f"\nFound {len(binaries)} binary(ies):\n")
+                        print("-" * 140)
+                        print(
                             f"{'Name':<35} {'SHA256':<66} {'Funcs':<6} {'BCC':<5} {'Decomp':<7} {'Class':<15}"
                         )
-                        logger.info("-" * 140)
+                        print("-" * 140)
 
                         for record in binaries:
                             sha256 = record["sha256"] or "N/A"
@@ -2276,16 +2276,16 @@ def main() -> None:
                             if len(name) > 33:
                                 name = name[:30] + "..."
 
-                            logger.info(
+                            print(
                                 f"{name:<35} {sha256:<66} {function_count:<6} {bcc_exists:<5} {decompiled:<7} {classification:<15}"
                             )
 
-                        logger.info("-" * 140)
-                        logger.info(f"\nTotal: {len(binaries)} binary(ies)")
-                        logger.info("Legend: BCC = BCC file path stored, Decomp = Decompiled code ingested")
-                        logger.info("        Class = Classification (unknown, benign, malicious, suspicious)")
+                        print("-" * 140)
+                        print(f"\nTotal: {len(binaries)} binary(ies)")
+                        print("Legend: BCC = BCC file path stored, Decomp = Decompiled code ingested")
+                        print("        Class = Classification (unknown, benign, malicious, suspicious)")
 
-                logger.info("=" * 60)
+                print("=" * 60)
 
             except Exception as e:
                 logger.error(f"ERROR: {e}")

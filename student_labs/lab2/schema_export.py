@@ -104,7 +104,7 @@ def export_schema_ddl(driver: Driver, database: str) -> str:
     """
     Export constraints and indexes as Cypher DDL statements.
 
-    Uses APOC's apoc.export.cypher.schema() to get schema DDL.
+    Uses APOC's apoc.export.cypher.schema() to get schema as Cypher statements.
 
     Args:
         driver: Neo4j driver instance.

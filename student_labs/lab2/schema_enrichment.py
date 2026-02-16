@@ -81,16 +81,19 @@ def enrich_node_properties(
     max_samples: int = 5,
 ) -> List[Dict[str, Any]]:
     """
-    Add sample values to all node properties.
+    Add sample values to node property metadata.
+
+    Takes the output from export_node_metadata() and enriches each property
+    with sample values from the database.
 
     Args:
         driver: Neo4j driver instance.
         database: Target database name.
-        nodes: List of node metadata from export_node_metadata().
+        nodes: List of node metadata records from export_node_metadata().
         max_samples: Maximum number of sample values per property.
 
     Returns:
-        Enriched node metadata with 'sampleValues' added to each record.
+        Enriched list with 'sampleValues' added to each record.
     """
     if _USE_REFERENCE:
         return _ref.enrich_node_properties(driver, database, nodes, max_samples)

@@ -175,18 +175,50 @@ class Lab2_5_Test:
                     message="Result missing 'success' key",
                 )
 
-            # Verify results key exists when successful
-            if result.get("success") and "results" not in result:
+            # Require success=True for valid query (not just presence of key)
+            if not result["success"]:
+                return TestResult(
+                    name=test_name,
+                    passed=False,
+                    message=f"Expected success=True for valid query, got success=False. "
+                    f"Error: {result.get('error', 'unknown')}. "
+                    f"Is Neo4j running and accessible?",
+                )
+
+            # Verify results key exists and is a list
+            if "results" not in result:
                 return TestResult(
                     name=test_name,
                     passed=False,
                     message="Result missing 'results' key for successful query",
                 )
 
+            if not isinstance(result["results"], list):
+                return TestResult(
+                    name=test_name,
+                    passed=False,
+                    message=f"Expected 'results' to be a list, got {type(result['results']).__name__}",
+                )
+
+            # Verify count key exists and is a non-negative integer
+            if "count" not in result:
+                return TestResult(
+                    name=test_name,
+                    passed=False,
+                    message="Result missing 'count' key for successful query",
+                )
+
+            if not isinstance(result["count"], int) or result["count"] < 0:
+                return TestResult(
+                    name=test_name,
+                    passed=False,
+                    message=f"Expected 'count' to be a non-negative integer, got {result['count']}",
+                )
+
             return TestResult(
                 name=test_name,
                 passed=True,
-                message=f"Successfully returns dict with success={result.get('success')}",
+                message=f"Query succeeded: {result['count']} results returned",
             )
 
         except ImportError as e:
@@ -206,8 +238,8 @@ class Lab2_5_Test:
         """
         Test that execute_cypher_query returns error info with invalid queries.
 
-        This test connects to Neo4j and verifies the function handles errors
-        properly. No mocks are used - the test uses real database calls.
+        This test connects to Neo4j and verifies the function handles Cypher
+        syntax errors properly. No mocks are used - the test uses real database calls.
         """
         test_name = "test_execute_cypher_query_error"
         try:
@@ -219,6 +251,18 @@ class Lab2_5_Test:
                     name=test_name,
                     passed=False,
                     message="Could not connect to Neo4j - check credentials",
+                )
+
+            # First, verify the driver is actually connected by running a simple query
+            verify_result = execute_cypher_query(
+                driver, self._database, "RETURN 1 AS n"
+            )
+            if not verify_result.get("success"):
+                return TestResult(
+                    name=test_name,
+                    passed=False,
+                    message=f"Neo4j connection verification failed: {verify_result.get('error', 'unknown')}. "
+                    f"Is Neo4j running and accessible?",
                 )
 
             # Use an intentionally invalid query
@@ -257,7 +301,7 @@ class Lab2_5_Test:
                     message="Expected success=False for invalid query",
                 )
 
-            # Verify error key exists
+            # Verify error key exists and is non-empty
             if "error" not in result:
                 return TestResult(
                     name=test_name,
@@ -265,10 +309,17 @@ class Lab2_5_Test:
                     message="Result missing 'error' key for failed query",
                 )
 
+            if not result["error"]:
+                return TestResult(
+                    name=test_name,
+                    passed=False,
+                    message="Expected non-empty error message for invalid query",
+                )
+
             return TestResult(
                 name=test_name,
                 passed=True,
-                message="Successfully returns error info with invalid queries",
+                message=f"Correctly returns error for invalid Cypher: {result['error'][:80]}",
             )
 
         except ImportError as e:
@@ -404,10 +455,50 @@ class Lab2_5_Test:
                     message="Result missing 'success' key",
                 )
 
+            # Require success=True for a valid query
+            if not result["success"]:
+                return TestResult(
+                    name=test_name,
+                    passed=False,
+                    message=f"Expected success=True for valid query, got success=False. "
+                    f"Error: {result.get('error', 'unknown')}. "
+                    f"Is Neo4j running and accessible?",
+                )
+
+            # Verify attempts key exists and equals 1 (succeeded on first try)
+            if "attempts" not in result:
+                return TestResult(
+                    name=test_name,
+                    passed=False,
+                    message="Result missing 'attempts' key",
+                )
+
+            if result["attempts"] != 1:
+                return TestResult(
+                    name=test_name,
+                    passed=False,
+                    message=f"Expected attempts=1 for valid query, got {result['attempts']}",
+                )
+
+            # Verify results key exists and is a list
+            if "results" not in result:
+                return TestResult(
+                    name=test_name,
+                    passed=False,
+                    message="Result missing 'results' key for successful query",
+                )
+
+            if not isinstance(result["results"], list):
+                return TestResult(
+                    name=test_name,
+                    passed=False,
+                    message=f"Expected 'results' to be a list, got {type(result['results']).__name__}",
+                )
+
             return TestResult(
                 name=test_name,
                 passed=True,
-                message=f"Successfully returns dict with success={result.get('success')}",
+                message=f"Query succeeded in {result['attempts']} attempt(s) with {result.get('count', len(result['results']))} results",
             )
 
         except ImportError as e:

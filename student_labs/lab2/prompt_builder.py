@@ -58,39 +58,10 @@ def format_relationships_for_llm(relationships: List[Dict[str, Any]]) -> str:
     if _USE_REFERENCE:
         return _ref.format_relationships_for_llm(relationships)
     ### YOUR CODE HERE ###
-    lines = []
-    lines.append("=" * 60)
-    lines.append("RELATIONSHIP TYPES (Graph Topology)")
-    lines.append("=" * 60)
-    lines.append("")
-
-    # Group by relationship type
-    rel_groups: Dict[str, List[Dict[str, Any]]] = {}
-    for rel in relationships:
-        rel_type = rel.get("relType", "UNKNOWN")
-        if rel_type not in rel_groups:
-            rel_groups[rel_type] = []
-        rel_groups[rel_type].append(rel)
-
-    for rel_type, rels in sorted(rel_groups.items()):
-        # Clean the relationship type name
-        clean_type = rel_type.replace(":`", "").replace("`", "").replace(":", "")
-        lines.append(f"Relationship: {clean_type}")
-
-        # Show source -> target patterns
-        patterns = set()
-        for rel in rels:
-            sources = rel.get("sourceNodeLabels", [])
-            targets = rel.get("targetNodeLabels", [])
-            for src in sources:
-                for tgt in targets:
-                    patterns.add(f"  ({src})-[:{clean_type}]->({tgt})")
-
-        for pattern in sorted(patterns):
-            lines.append(pattern)
-        lines.append("")
-
-    return "\n".join(lines)
+    # TODO: Implement this function
+    # Group relationships by type, clean type names, and format as readable text
+    # Show source -> target patterns for each relationship type
+    pass
     ### END YOUR CODE HERE ###
 
 
@@ -111,50 +82,10 @@ def format_nodes_for_llm(
     if _USE_REFERENCE:
         return _ref.format_nodes_for_llm(nodes, descriptions)
     ### YOUR CODE HERE ###
-    lines = []
-    lines.append("=" * 60)
-    lines.append("NODE LABELS AND PROPERTIES")
-    lines.append("=" * 60)
-    lines.append("")
-
-    # Group by node type
-    node_groups: Dict[str, List[Dict[str, Any]]] = {}
-    for node in nodes:
-        node_type = node.get("nodeType", "UNKNOWN")
-        if node_type not in node_groups:
-            node_groups[node_type] = []
-        node_groups[node_type].append(node)
-
-    for node_type, props in sorted(node_groups.items()):
-        # Clean the node type name
-        clean_type = node_type.replace(":`", "").replace("`", "").replace(":", "")
-        lines.append(f"Node: {clean_type}")
-
-        for prop in props:
-            prop_name = prop.get("propertyName", "unknown")
-            prop_types = prop.get("propertyTypes", [])
-            mandatory = prop.get("mandatory", False)
-            samples = prop.get("sampleValues", [])
-
-            type_str = ", ".join(prop_types) if prop_types else "UNKNOWN"
-            req_str = "required" if mandatory else "optional"
-
-            lines.append(f"  - {prop_name} ({type_str}, {req_str})")
-
-            # Add sample values if available
-            if samples:
-                # Truncate long values for display
-                display_samples = []
-                for s in samples[:3]:
-                    s_str = str(s)
-                    if len(s_str) > 30:
-                        s_str = s_str[:27] + "..."
-                    display_samples.append(f'"{s_str}"')
-                lines.append(f"    Samples: [{', '.join(display_samples)}]")
-
-        lines.append("")
-
-    return "\n".join(lines)
+    # TODO: Implement this function
+    # Group nodes by type, clean type names, and format properties as readable text
+    # Include sample values if available (from enrichment step)
+    pass
     ### END YOUR CODE HERE ###
 
 
@@ -171,37 +102,10 @@ def build_cypher_generation_prompt(schema_text: str) -> str:
     if _USE_REFERENCE:
         return _ref.build_cypher_generation_prompt(schema_text)
     ### YOUR CODE HERE ###
-    prompt = f"""You are an expert Neo4j Cypher query generator. Given a natural language question, generate an accurate Cypher query.
-
-DATABASE SCHEMA:
-{schema_text}
-
-INSTRUCTIONS:
-1. Generate ONLY valid Cypher syntax
-2. Use exact node labels and relationship types from the schema
-3. Use only properties that exist in the schema
-4. Respect property types (STRING, INTEGER, etc.)
-5. Follow relationship direction: (Source)-[:TYPE]->(Target)
-6. Use MATCH for queries, not CREATE/MERGE unless explicitly asked
-7. Return your Cypher query inside ```cypher and ``` code blocks
-8. Add a brief explanation after the query
-9. Include LIMIT 25 unless the user specifies a different limit
-
-EXAMPLE:
-User: "Find all binaries with more than 100 functions"
-Assistant:
-```cypher
-MATCH (b:Binary)-[:HAS_FUNCTION]->(f:Function)
-WITH b, count(f) AS func_count
-WHERE func_count > 100
-RETURN b.name, b.sha256, func_count
-ORDER BY func_count DESC
-LIMIT 25
-```
-
-This query finds binaries with more than 100 functions and returns their name, SHA256 hash, and function count.
-"""
-    return prompt
+    # TODO: Implement this function
+    # Build a system prompt that includes the schema text and instructions for Cypher generation
+    # Include guidelines for valid Cypher syntax, code block formatting, and a LIMIT clause
+    pass
     ### END YOUR CODE HERE ###
 
 
