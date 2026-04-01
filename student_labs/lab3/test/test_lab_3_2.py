@@ -61,7 +61,7 @@ class TestResult:
     vuln_type: Optional[str] = None
 
 
-class Lab5_2_Test:
+class Lab3_2_Test:
     """
     Test suite for Lab 3.2 - Source-to-Sink Path Analysis Functions.
 
@@ -1263,7 +1263,7 @@ def main() -> int:
     print("  Lab 3.2: Source-to-Sink Path Analysis Tests")
     print("=" * 60)
 
-    test_suite = Lab5_2_Test(verbose=args.verbose)
+    test_suite = Lab3_2_Test(verbose=args.verbose)
     results = test_suite.run_all_tests()
     test_suite.print_summary()
 

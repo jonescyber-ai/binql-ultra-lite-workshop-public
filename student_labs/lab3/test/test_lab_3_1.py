@@ -61,7 +61,7 @@ class TestResult:
     input_source_type: Optional[str] = None
 
 
-class Lab5_1_Test:
+class Lab3_1_Test:
     """
     Test suite for Lab 3.1 - User-Controlled Input Detection Functions.
 
@@ -852,7 +852,7 @@ def main() -> int:
     print("=" * 60 + "\n")
 
     # Run tests
-    test_suite = Lab5_1_Test(verbose=args.verbose)
+    test_suite = Lab3_1_Test(verbose=args.verbose)
     results = test_suite.run_all()
     test_suite.print_summary()
 

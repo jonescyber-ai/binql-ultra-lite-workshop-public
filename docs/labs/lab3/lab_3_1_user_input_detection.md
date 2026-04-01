@@ -441,3 +441,38 @@ Static analysis often produces false positives from:
 - Library code that's linked but never called
 
 By requiring reachability from function entry points, we filter these out and focus on input sources that can actually receive attacker data.
+
+### Handling LLM Classification False Positives
+
+LLM-based API classification (Function 8) may produce incorrect results. The module provides tools to review and correct classifications:
+
+**Review cached classifications:**
+```bash
+# List all cached user-input classifications
+python -m student_labs.lab3.user_input_detection --review-classifications
+
+# Filter by category
+python -m student_labs.lab3.user_input_detection --review-classifications --filter-category network
+
+# Export all classifications to a review file
+python -m student_labs.lab3.user_input_detection --export-classifications
+```
+
+**Override incorrect classifications:**
+
+Create or edit `cache/llm_api_classification/overrides.json` to correct false positives or negatives. Overrides take precedence over LLM results on the next run.
+
+```json
+{
+  "my_safe_api": {
+    "api": "my_safe_api",
+    "is_user_input": false,
+    "input_category": "none",
+    "confidence": "high",
+    "description": "Internal helper, not user input",
+    "security_notes": "False positive corrected — does not read external data"
+  }
+}
+```
+
+This override mechanism is useful when integrating the classification pipeline into CI/CD workflows, where consistent and auditable results are important.

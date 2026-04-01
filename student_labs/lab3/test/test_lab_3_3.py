@@ -57,7 +57,7 @@ class TestResult:
     results_data: Optional[List[Any]] = None
 
 
-class Lab5_3_Test:
+class Lab3_3_Test:
     """
     Test suite for Lab 3.3 - Path Risk Analysis Functions.
 
@@ -785,7 +785,7 @@ class Lab5_3_Test:
     def print_summary(self) -> None:
         """Print test results summary."""
         print("\n" + "=" * 70)
-        print("LAB 5.3 TEST RESULTS: Path Risk Analysis")
+        print("LAB 3.3 TEST RESULTS: Path Risk Analysis")
         print("=" * 70)
 
         passed = sum(1 for r in self.results if r.passed)
@@ -833,7 +833,7 @@ def main() -> None:
     )
 
     # Run tests
-    test_suite = Lab5_3_Test(verbose=args.verbose)
+    test_suite = Lab3_3_Test(verbose=args.verbose)
     test_suite.run_all_tests()
     test_suite.print_summary()
 

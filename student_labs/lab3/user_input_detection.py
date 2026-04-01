@@ -999,6 +999,117 @@ def classify_binary_apis_with_llm(
     return all_results
 
 
+def review_cached_classifications(
+    filter_user_input: Optional[bool] = None,
+    filter_category: Optional[str] = None,
+) -> List[Dict[str, Any]]:
+    """
+    Review cached LLM classifications for auditing and false positive detection.
+
+    Returns cached classifications, optionally filtered by user-input status or
+    category. Use this to identify potential false positives/negatives that need
+    manual override via cache/llm_api_classification/overrides.json.
+
+    Args:
+        filter_user_input: If set, filter to only user-input (True) or non-user-input (False).
+        filter_category: If set, filter to a specific input category.
+
+    Returns:
+        List of classification results matching the filters.
+    """
+    if _USE_REFERENCE:
+        return _ref.review_cached_classifications(filter_user_input, filter_category)
+
+    # Self-contained implementation: load cache from disk and filter
+    import json
+    cache_dir = Path("cache/llm_api_classification")
+    cache: Dict[str, Dict[str, Any]] = {}
+
+    # Load cached classifications
+    if cache_dir.exists():
+        for cache_file in cache_dir.glob("*.json"):
+            if cache_file.name == "overrides.json" or cache_file.name == "review.json":
+                continue
+            try:
+                with open(cache_file, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    api_name = data.get("api")
+                    if api_name:
+                        cache[api_name] = data
+            except (json.JSONDecodeError, IOError):
+                continue
+
+    # Apply overrides
+    overrides_path = cache_dir / "overrides.json"
+    if overrides_path.exists():
+        try:
+            with open(overrides_path, "r", encoding="utf-8") as f:
+                overrides = json.load(f)
+                if isinstance(overrides, dict):
+                    cache.update(overrides)
+        except (json.JSONDecodeError, IOError):
+            pass
+
+    results = list(cache.values())
+    if filter_user_input is not None:
+        results = [r for r in results if r.get("is_user_input") == filter_user_input]
+    if filter_category is not None:
+        results = [r for r in results if r.get("input_category") == filter_category]
+
+    return sorted(results, key=lambda r: (r.get("input_category", ""), r.get("api", "")))
+
+
+def export_classifications_for_review(output_path: Optional[str] = None) -> str:
+    """
+    Export all cached classifications to a JSON file for review.
+
+    This makes it easy to inspect all LLM classifications and identify any that
+    need to be corrected via overrides.json.
+
+    Args:
+        output_path: Path to write the export. Defaults to cache/llm_api_classification/review.json.
+
+    Returns:
+        Path to the exported file.
+    """
+    if _USE_REFERENCE:
+        return _ref.export_classifications_for_review(output_path)
+
+    import json
+    cache_dir = Path("cache/llm_api_classification")
+    cache_dir.mkdir(parents=True, exist_ok=True)
+
+    if output_path is None:
+        output_path = str(cache_dir / "review.json")
+
+    # Load all cached classifications
+    all_classifications = review_cached_classifications()
+
+    by_category: Dict[str, List[Dict[str, Any]]] = {}
+    for result in all_classifications:
+        category = result.get("input_category", "unknown")
+        if category not in by_category:
+            by_category[category] = []
+        by_category[category].append(result)
+
+    export_data = {
+        "total_apis": len(all_classifications),
+        "user_input_count": sum(1 for r in all_classifications if r.get("is_user_input")),
+        "by_category": by_category,
+        "instructions": (
+            "To override a classification, copy the entry to overrides.json "
+            "in the same directory and modify the fields. Overrides take "
+            "precedence over LLM classifications on next load."
+        ),
+    }
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(export_data, f, indent=2)
+
+    logger.info(f"Exported {len(all_classifications)} classifications to {output_path}")
+    return output_path
+
+
 def get_binary_info(driver: Driver, database: str, sha256: str) -> Dict[str, Any]:
     """
     Get binary metadata from the database.
@@ -1172,6 +1283,12 @@ Examples:
 
   # Include all APIs in report (not just user-input sources)
   python -m student_labs.lab3.user_input_detection --scan-apis --sha256 abc123... --show-all
+
+  # Review cached LLM classifications for false positives
+  python -m student_labs.lab3.user_input_detection --review-classifications
+
+  # Export classifications for auditing (creates review.json)
+  python -m student_labs.lab3.user_input_detection --export-classifications
         """,
     )
 
@@ -1197,6 +1314,14 @@ Examples:
     parser.add_argument("--output", "-o", type=str, metavar="FILE",
                         help="Output file for markdown report (default: output/lab3/user_input_report_<sha256>.md)")
 
+    # Classification review and override arguments
+    parser.add_argument("--review-classifications", action="store_true",
+                        help="Review cached LLM API classifications for false positive detection")
+    parser.add_argument("--export-classifications", action="store_true",
+                        help="Export all cached classifications to review.json for auditing")
+    parser.add_argument("--filter-category", type=str, metavar="CATEGORY",
+                        help="Filter reviewed classifications by category (network, file, stdin, etc.)")
+
     # Common arguments
     parser.add_argument("--limit", type=int, default=100, help="Maximum results per query (default: 100)")
 
@@ -1215,6 +1340,30 @@ Examples:
         print("-" * 40)
         result = classify_api_with_llm(args.classify_api)
         print(json.dumps(result, indent=2))
+        return
+
+    # Handle classification review (doesn't need Neo4j)
+    if args.review_classifications:
+        results = review_cached_classifications(
+            filter_user_input=True,
+            filter_category=args.filter_category,
+        )
+        if not results:
+            print("\nNo cached classifications found. Run --scan-apis first.")
+            return
+        print(f"\n{'=' * 80}")
+        print(f"  CACHED LLM CLASSIFICATIONS ({len(results)} APIs)")
+        print(f"  To correct a classification, add an override to:")
+        print(f"  cache/llm_api_classification/overrides.json")
+        print(f"{'=' * 80}")
+        print_llm_classification_results(results)
+        return
+
+    # Handle classification export (doesn't need Neo4j)
+    if args.export_classifications:
+        output = export_classifications_for_review()
+        print(f"\nClassifications exported to: {output}")
+        print("Review the file and copy entries to overrides.json to correct false positives.")
         return
 
     # Connect to Neo4j
