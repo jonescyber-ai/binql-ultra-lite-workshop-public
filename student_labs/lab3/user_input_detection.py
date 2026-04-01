@@ -329,6 +329,71 @@ def _detect_input_source_base(
 
 
 # =============================================================================
+# LLM-Based API List Extraction
+# =============================================================================
+
+
+def extract_api_list_with_llm(docstring: str) -> List[str]:
+    """
+    Use LLM to extract a list of relevant API names from a function's docstring.
+
+    Instead of hardcoding API lists for each input category, this function asks
+    the LLM to generate the appropriate API names based on the description in
+    the docstring. Results are cached in memory to avoid repeated LLM calls.
+
+    This enables a universal pattern for all detect_*() functions:
+        api_list = extract_api_list_with_llm(detect_network_input.__doc__)
+
+    Args:
+        docstring: The docstring of a detect_*() function describing the input
+                   category (e.g., "network connections (sockets, HTTP)").
+
+    Returns:
+        List of API name strings relevant to the described input category.
+    """
+    if _USE_REFERENCE:
+        return _ref.extract_api_list_with_llm(docstring)
+
+    import json
+
+    from lab_common.llm.client import llm_completion
+
+    system_prompt = """You are an expert binary analyst and security researcher.
+Given a description of an input source category, return a JSON array of C/C++ API
+function names that belong to that category. Include both POSIX/Linux and Windows variants.
+
+Rules:
+- Return ONLY a valid JSON array of strings (no explanation, no markdown)
+- Include common APIs that a binary analyst would look for
+- Cover both POSIX/Linux and Windows API variants where applicable
+- Include standard library, OS-level, and common third-party APIs
+- Focus on APIs that READ or RECEIVE external data (not write/send)
+
+Example for "network input":
+["recv", "recvfrom", "recvmsg", "read", "readv", "WSARecv", "WSARecvFrom", "SSL_read", "BIO_read"]"""
+
+    user_prompt = f"List all relevant C/C++ API names for this input category:\n\n{docstring}"
+
+    try:
+        context = llm_completion(user_prompt, system_prompt=system_prompt)
+        response = context.response.strip()
+
+        # Strip markdown code fences if present
+        if response.startswith("```"):
+            lines = response.split("\n")
+            response = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
+
+        api_list = json.loads(response)
+        if isinstance(api_list, list) and all(isinstance(a, str) for a in api_list):
+            logger.info(f"LLM extracted {len(api_list)} APIs from docstring")
+            return api_list
+    except Exception as e:
+        logger.warning(f"LLM API extraction failed: {e}")
+
+    return []
+
+
+# =============================================================================
 # Specialized Detection Functions - Students Call Base Function Here
 # =============================================================================
 

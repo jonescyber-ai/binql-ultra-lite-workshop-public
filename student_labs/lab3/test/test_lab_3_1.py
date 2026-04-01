@@ -658,6 +658,206 @@ class Lab3_1_Test:
                 message=f"Function execution failed: {e}",
             )
 
+    def test_extract_api_list_with_llm_importable(self) -> TestResult:
+        """
+        Test that extract_api_list_with_llm is importable and callable.
+        """
+        test_name = "test_extract_api_list_with_llm_importable"
+
+        try:
+            from student_labs.lab3.user_input_detection import extract_api_list_with_llm
+
+            if not callable(extract_api_list_with_llm):
+                return TestResult(
+                    name=test_name,
+                    passed=False,
+                    message="extract_api_list_with_llm is not callable",
+                )
+
+            return TestResult(
+                name=test_name,
+                passed=True,
+                message="extract_api_list_with_llm is importable and callable",
+            )
+
+        except ImportError as e:
+            return TestResult(
+                name=test_name,
+                passed=False,
+                message=f"Import error: {e}",
+            )
+
+    def test_extract_api_list_with_llm_returns_apis(self) -> TestResult:
+        """
+        Test that extract_api_list_with_llm returns valid API lists from docstrings.
+
+        Validates:
+        - Returns a list of strings for each of the 6 input categories
+        - Each list contains at least some expected "anchor" APIs
+        - Works universally across all detect_*() function docstrings
+        """
+        test_name = "test_extract_api_list_with_llm_returns_apis"
+
+        try:
+            from student_labs.lab3.user_input_detection import (
+                detect_network_input,
+                detect_file_input,
+                detect_stdin_input,
+                detect_environment_input,
+                detect_ipc_input,
+                detect_cmdline_input,
+                extract_api_list_with_llm,
+            )
+
+            # Map each detect function to anchor APIs that MUST appear
+            # (well-known APIs the LLM should always return)
+            test_cases = {
+                "network": {
+                    "docstring": detect_network_input.__doc__,
+                    "anchors": ["recv", "recvfrom"],
+                },
+                "file": {
+                    "docstring": detect_file_input.__doc__,
+                    "anchors": ["fread", "fgets"],
+                },
+                "stdin": {
+                    "docstring": detect_stdin_input.__doc__,
+                    "anchors": ["scanf", "gets"],
+                },
+                "environment": {
+                    "docstring": detect_environment_input.__doc__,
+                    "anchors": ["getenv"],
+                },
+                "ipc": {
+                    "docstring": detect_ipc_input.__doc__,
+                    "anchors": ["msgrcv"],
+                },
+                "cmdline": {
+                    "docstring": detect_cmdline_input.__doc__,
+                    "anchors": ["getopt"],
+                },
+            }
+
+            results_detail = {}
+            failures = []
+
+            for category, spec in test_cases.items():
+                api_list = extract_api_list_with_llm(spec["docstring"])
+
+                # Check return type
+                if not isinstance(api_list, list):
+                    failures.append(f"{category}: expected list, got {type(api_list).__name__}")
+                    continue
+
+                # Check all items are strings
+                non_strings = [a for a in api_list if not isinstance(a, str)]
+                if non_strings:
+                    failures.append(f"{category}: list contains non-string items")
+                    continue
+
+                # Check minimum size (LLM should return at least a few)
+                if len(api_list) < 2:
+                    failures.append(f"{category}: only {len(api_list)} APIs returned (expected >= 2)")
+                    continue
+
+                # Check anchor APIs are present
+                api_list_lower = [a.lower() for a in api_list]
+                missing_anchors = [
+                    a for a in spec["anchors"]
+                    if a.lower() not in api_list_lower
+                ]
+                if missing_anchors:
+                    failures.append(
+                        f"{category}: missing anchor APIs {missing_anchors} "
+                        f"(got {len(api_list)} APIs: {api_list[:5]}...)"
+                    )
+                    continue
+
+                results_detail[category] = len(api_list)
+
+            if failures:
+                return TestResult(
+                    name=test_name,
+                    passed=False,
+                    message=f"{len(failures)} category failures: {'; '.join(failures)}",
+                    details={"passed_categories": results_detail},
+                )
+
+            return TestResult(
+                name=test_name,
+                passed=True,
+                message=f"LLM extracted APIs for all 6 categories: {results_detail}",
+                details=results_detail,
+            )
+
+        except Exception as e:
+            return TestResult(
+                name=test_name,
+                passed=False,
+                message=f"Error: {e}",
+            )
+
+    def test_extract_api_list_with_llm_detect_integration(self) -> TestResult:
+        """
+        Test that LLM-extracted API lists can be used with _detect_input_source_base
+        to produce actual results from Neo4j (integration test).
+
+        Uses detect_network_input's docstring to extract APIs, then runs them
+        against the database to find real matches.
+        """
+        test_name = "test_extract_api_list_with_llm_detect_integration"
+
+        try:
+            from student_labs.lab3.user_input_detection import (
+                detect_network_input,
+                extract_api_list_with_llm,
+                _detect_input_source_base,
+            )
+
+            # Extract API list from network docstring
+            api_list = extract_api_list_with_llm(detect_network_input.__doc__)
+
+            if not api_list:
+                return TestResult(
+                    name=test_name,
+                    passed=False,
+                    message="LLM returned empty API list",
+                )
+
+            # Use the LLM-extracted list with the base detection function
+            results = _detect_input_source_base(self.driver, self.database, api_list, limit=10)
+
+            if not isinstance(results, list):
+                return TestResult(
+                    name=test_name,
+                    passed=False,
+                    message=f"Expected list, got {type(results).__name__}",
+                )
+
+            # Also get results from the hardcoded function for comparison
+            hardcoded_results = detect_network_input(self.driver, self.database, limit=10)
+
+            return TestResult(
+                name=test_name,
+                passed=True,
+                message=(
+                    f"LLM-extracted list ({len(api_list)} APIs) found {len(results)} results "
+                    f"vs hardcoded found {len(hardcoded_results)} results"
+                ),
+                details={
+                    "llm_api_count": len(api_list),
+                    "llm_result_count": len(results),
+                    "hardcoded_result_count": len(hardcoded_results),
+                },
+            )
+
+        except Exception as e:
+            return TestResult(
+                name=test_name,
+                passed=False,
+                message=f"Error: {e}",
+            )
+
     def test_cli_help(self) -> TestResult:
         """
         Test that the CLI --help works.
@@ -785,6 +985,9 @@ class Lab3_1_Test:
             self.test_detect_cmdline_input,
             self.test_get_all_input_sources,
             self.test_get_high_risk_functions,
+            self.test_extract_api_list_with_llm_importable,
+            self.test_extract_api_list_with_llm_returns_apis,
+            self.test_extract_api_list_with_llm_detect_integration,
             self.test_cli_help,
         ]
 

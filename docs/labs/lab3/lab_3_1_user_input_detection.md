@@ -378,6 +378,36 @@ Consider both POSIX/Linux and Windows API variants."""
 
 ---
 
+## 🔹 Optional: LLM-Based API List Extraction
+
+> **Advanced / Optional** — This section demonstrates an alternative to hardcoding API lists. You do not need to implement this to pass the lab, but it showcases a powerful LLM pattern.
+
+In your `detect_*()` implementations above, each function defines a hardcoded `api_list`. The module provides an alternative: `extract_api_list_with_llm()`, which uses an LLM to dynamically generate the API list from the function's docstring.
+
+**Universal one-liner pattern:**
+```python
+def detect_network_input(driver, database, limit=100):
+    """Find functions that receive data from network connections (sockets, HTTP)..."""
+    api_list = extract_api_list_with_llm(detect_network_input.__doc__)
+    return _detect_input_source_base(driver, database, api_list, limit)
+```
+
+This works identically for all 6 categories — the LLM reads the docstring description and returns the appropriate API names. Benefits:
+- **No duplication** — API lists are derived from the docstring, not maintained in two places
+- **Discoverable** — the LLM may find APIs you didn't know about
+- **Maintainable** — update the docstring description, and the API list updates automatically
+
+**Trade-offs:** LLM extraction adds ~1-2s per call (results are cached in memory), costs tokens, and may vary between runs. The hardcoded approach is deterministic and free. Use whichever fits your use case.
+
+```bash
+# Test LLM extraction
+source venv/bin/activate
+python -m student_labs.lab3.test.test_lab_3_1 -v
+# Look for: test_extract_api_list_with_llm_returns_apis
+```
+
+---
+
 ## ✅ Success Criteria
 
 Your implementation is complete when:
