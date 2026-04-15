@@ -694,6 +694,13 @@ def _print_analysis_results(analyses: List[PathRiskAnalysis], verbose: bool = Fa
 
 def main() -> None:
     """Main entry point for the complexity analysis CLI."""
+    # Ensure UTF-8 output on Windows (cp1252 cannot encode emoji/Unicode chars)
+    import sys
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except (AttributeError, OSError):
+        pass
+
     parser = argparse.ArgumentParser(
         description="Lab 3.3: Path Risk Analysis - Rank Lab 3.2 paths by complexity and traversal likelihood",
         formatter_class=argparse.RawDescriptionHelpFormatter,

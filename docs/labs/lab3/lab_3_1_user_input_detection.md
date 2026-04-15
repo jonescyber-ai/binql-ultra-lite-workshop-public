@@ -60,7 +60,7 @@ The module provides:
 - `run_query()` - Helper function to execute Cypher queries (already implemented)
 - `InputSourceResult` - Dataclass for structured results (already implemented)
 - `_convert_to_input_source_results()` - Converts query results to InputSourceResult objects (already implemented)
-- 8 functions with `### YOUR CODE HERE ###` placeholders for you to fill in
+- 9 functions with `### YOUR CODE HERE ###` placeholders for you to fill in
 
 ### Step 2: Implement the Required Functions
 
@@ -74,6 +74,7 @@ You need to implement these functions:
 6. **`detect_ipc_input()`** — Find IPC input sources (pipes, shared memory, RPC)
 7. **`detect_cmdline_input()`** — Find command-line argument input (getopt, argv)
 8. **`classify_api_with_llm()`** — LLM-based API classification for unknown APIs
+9. **`generate_scan_report()`** — Generate a markdown report of user-input sources for a binary (used by `--scan-apis`)
 
 > 📖 **See the "📚 Implementation Guide" section below for detailed guidance on implementing each function.**
 
@@ -362,6 +363,10 @@ Consider both POSIX/Linux and Windows API variants."""
     try:
         context = llm_completion(prompt, system_prompt=system_prompt)
         response = context.response.strip()
+        # Strip markdown code fences if present
+        if response.startswith("```"):
+            lines = response.split("\n")
+            response = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
         data = json.loads(response)
         return data
     except json.JSONDecodeError as e:
@@ -375,6 +380,21 @@ Consider both POSIX/Linux and Windows API variants."""
         }
     ### END YOUR CODE HERE ###
 ```
+
+### Function 9 — `generate_scan_report()`
+
+Generates a comprehensive markdown report of user-input sources for a specific binary. This function is invoked by the `--scan-apis --sha256` CLI flag.
+
+**What to implement:**
+1. Get binary info using `get_binary_info()`
+2. Call `get_user_input_sources_for_binary()` to get all user-input sources
+3. Group sources by category
+4. Use `llm_completion()` to generate an executive summary and security analysis
+5. Build a markdown report with all sections
+6. Write to file if `output_path` is specified
+7. Return the report string
+
+> 💡 **Hint:** See the function's docstring in the student file for the full signature and return type. The report should include binary metadata, user-input sources grouped by category with call-site details, an LLM-generated executive summary, and recommendations.
 
 ---
 
@@ -412,7 +432,7 @@ python -m student_labs.lab3.test.test_lab_3_1 -v
 
 Your implementation is complete when:
 
-- [ ] All 8 functions are implemented in `student_labs/lab3/user_input_detection.py`
+- [ ] All 9 functions are implemented in `student_labs/lab3/user_input_detection.py`
 - [ ] The CLI runs without errors:
   ```bash
   source venv/bin/activate
@@ -445,6 +465,7 @@ In this lab, you implemented:
 | **Base Query Function** | CFG reachability query to find functions calling specific APIs |
 | **6 Detection Functions** | Specialized detectors for network, file, stdin, environment, IPC, and command-line input |
 | **LLM API Classifier** | Classify unknown APIs to discover new input sources |
+| **Scan Report Generator** | Generate a markdown report of user-input sources for a binary |
 
 **Key Insight:** The same CFG reachability pattern from Lab 1 (capability detection) now finds *input sources* instead of *capabilities*. The `--scan-apis` command uses `get_user_input_sources_for_binary()` which Lab 3.2 will leverage for source-to-sink analysis.
 

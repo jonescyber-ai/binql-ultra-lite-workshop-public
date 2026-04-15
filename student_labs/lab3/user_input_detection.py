@@ -1322,6 +1322,13 @@ def print_results(category: str, results: List[InputSourceResult]) -> None:
 
 def main() -> None:
     """CLI entry point for user-controlled input detection."""
+    # Ensure UTF-8 output on Windows (cp1252 cannot encode emoji/Unicode chars)
+    import sys
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except (AttributeError, OSError):
+        pass
+
     parser = argparse.ArgumentParser(
         description="Detect user-controlled input sources in binaries using graph queries.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -1464,8 +1471,11 @@ Examples:
                     sha256=args.sha256,
                     output_path=output_path,
                 )
-                print(f"\n✅ Report generated successfully: {output_path}")
-                print(f"   Report length: {len(report)} characters")
+                if report:
+                    print(f"\n✅ Report generated successfully: {output_path}")
+                    print(f"   Report length: {len(report)} characters")
+                else:
+                    print("\n⚠️  generate_scan_report() returned None — is it implemented yet?")
             except ValueError as e:
                 print(f"\nError: {e}")
                 print("Make sure the binary has been ingested into the database.")

@@ -18,10 +18,10 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                    LAB 5.3: PATH RISK QUANTIFICATION                         │
+│                    LAB 3.3: PATH RISK QUANTIFICATION                         │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
-│   LAB 5.2 OUTPUT                    LAB 5.3 ANALYSIS                        │
+│   LAB 3.2 OUTPUT                    LAB 3.3 ANALYSIS                        │
 │   (Source-to-Sink Paths)            (Quantify Each Path)                    │
 │                                                                              │
 │   ┌─────────────────────┐           ┌─────────────────────────────────┐     │
@@ -52,7 +52,7 @@
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Why This Matters: The Lab 3.2 → 5.3 Narrative
+### Why This Matters: The Lab 3.2 → 3.3 Narrative
 
 Lab 3.2 identifies **potential** vulnerabilities—functions where user input can reach dangerous sinks. But not all paths are equally exploitable:
 
@@ -98,7 +98,7 @@ You need to implement these functions:
 4. **`get_paths_for_binary()`** — Retrieve all Lab 3.2 source-to-sink paths for a specific binary using Lab 3.2's API
 5. **`analyze_all_paths_for_binary()`** — Analyze all Lab 3.2 paths for a binary and return ranked `PathRiskAnalysis` objects
 
-> 💡 **Note:** LLM-powered report generation is covered in **Lab 3.4**, which synthesizes findings from Labs 3.1-5.3 into comprehensive vulnerability triage reports.
+> 💡 **Note:** LLM-powered report generation is covered in **Lab 3.4**, which synthesizes findings from Labs 3.1-3.3 into comprehensive vulnerability triage reports.
 
 > 📖 **See the "📚 Implementation Guide" section below for detailed guidance on implementing each function.**
 
@@ -535,7 +535,7 @@ Your implementation is complete when:
   python -m student_labs.lab3.test.test_lab_3_3
   ```
 
-> 💡 **Next Step:** After completing Lab 3.3, proceed to **Lab 3.4** to generate comprehensive LLM-powered vulnerability triage reports that synthesize findings from Labs 3.1-5.3.
+> 💡 **Next Step:** After completing Lab 3.3, proceed to **Lab 3.4** to generate comprehensive LLM-powered vulnerability triage reports that synthesize findings from Labs 3.1-3.3.
 
 ---
 
@@ -559,14 +559,14 @@ In this lab, you implemented:
 
 ## 📚 Additional Reading
 
-### The Lab 3.1 → 5.2 → 5.3 Pipeline
+### The Lab 3.1 → 3.2 → 3.3 Pipeline
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                    COMPLETE VULNERABILITY ANALYSIS PIPELINE                  │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
-│   LAB 5.1                    LAB 5.2                    LAB 5.3             │
+│   LAB 3.1                    LAB 3.2                    LAB 3.3             │
 │   Input Sources              Source-to-Sink            Path Risk            │
 │                              Paths                     Analysis             │
 │                                                                              │
@@ -627,4 +627,4 @@ python -m student_labs.lab3.complexity_analysis --sha256 <hash> --verbose
 
 ### Connection to Lab 3.4
 
-**Lab 3.4 (Vulnerability Triage Report):** Takes Lab 3.3's ranked `PathRiskAnalysis` results along with Lab 3.1 and 5.2 findings and uses LLM to generate comprehensive vulnerability triage reports with executive summaries and actionable recommendations. See Lab 3.4 for LLM-powered report generation.
+**Lab 3.4 (Vulnerability Triage Report):** Takes Lab 3.3's ranked `PathRiskAnalysis` results along with Lab 3.1 and 3.2 findings and uses LLM to generate comprehensive vulnerability triage reports with executive summaries and actionable recommendations. See Lab 3.4 for LLM-powered report generation.
