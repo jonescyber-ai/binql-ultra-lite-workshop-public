@@ -59,6 +59,11 @@ class TestResult:
     details: Optional[Dict[str, Any]] = None
     results_data: Optional[List[Any]] = None
     vuln_type: Optional[str] = None
+    skipped: bool = False
+
+
+# Inter-procedural tests only run when USE_REFERENCE=1 (instructor-only)
+_USE_REFERENCE = os.environ.get("USE_REFERENCE", "").lower() in ("1", "true", "yes")
 
 
 class Lab3_2_Test:
@@ -829,8 +834,20 @@ class Lab3_2_Test:
             )
 
     # =========================================================================
-    # Inter-Procedural Analysis Tests
+    # Inter-Procedural Analysis Tests (instructor-only — requires labs/ folder)
     # =========================================================================
+
+    @staticmethod
+    def _skip_interprocedural(test_name: str) -> Optional[TestResult]:
+        """Return a skip result unless USE_REFERENCE=1 is set."""
+        if not _USE_REFERENCE:
+            return TestResult(
+                name=test_name,
+                passed=True,
+                message="SKIPPED: requires USE_REFERENCE=1 (instructor-only)",
+                skipped=True,
+            )
+        return None
 
     def test_interprocedural_function_exists(self) -> TestResult:
         """
@@ -840,6 +857,9 @@ class Lab3_2_Test:
         - Inter-procedural analysis extends intra-procedural by following function calls
         """
         test_name = "test_interprocedural_function_exists"
+        skip = self._skip_interprocedural(test_name)
+        if skip:
+            return skip
 
         try:
             from labs.lab3.source_to_sink_analysis_reference import (
@@ -884,6 +904,9 @@ class Lab3_2_Test:
         - Inter-procedural analysis follows function calls to find cross-function paths
         """
         test_name = "test_interprocedural_buffer_overflow_paths"
+        skip = self._skip_interprocedural(test_name)
+        if skip:
+            return skip
 
         try:
             from labs.lab3.source_to_sink_analysis_reference import (
@@ -951,6 +974,9 @@ class Lab3_2_Test:
         - call_depth=2: calls through one intermediate function
         """
         test_name = "test_interprocedural_call_depth_parameter"
+        skip = self._skip_interprocedural(test_name)
+        if skip:
+            return skip
 
         try:
             from labs.lab3.source_to_sink_analysis_reference import (
@@ -1006,6 +1032,9 @@ class Lab3_2_Test:
         - All 4 detection functions should support interprocedural parameter
         """
         test_name = "test_interprocedural_all_vulnerability_types"
+        skip = self._skip_interprocedural(test_name)
+        if skip:
+            return skip
 
         try:
             from labs.lab3.source_to_sink_analysis_reference import (
@@ -1075,6 +1104,9 @@ class Lab3_2_Test:
         - Aggregation function should also support interprocedural analysis
         """
         test_name = "test_interprocedural_get_all_vulnerability_paths"
+        skip = self._skip_interprocedural(test_name)
+        if skip:
+            return skip
 
         try:
             from labs.lab3.source_to_sink_analysis_reference import (
@@ -1131,6 +1163,9 @@ class Lab3_2_Test:
         - High-risk function detection should also support interprocedural analysis
         """
         test_name = "test_interprocedural_high_risk_functions"
+        skip = self._skip_interprocedural(test_name)
+        if skip:
+            return skip
 
         try:
             from labs.lab3.source_to_sink_analysis_reference import (
@@ -1225,7 +1260,8 @@ class Lab3_2_Test:
 
     def print_summary(self) -> None:
         """Print test summary."""
-        passed = sum(1 for r in self.results if r.passed)
+        skipped = sum(1 for r in self.results if r.skipped)
+        passed = sum(1 for r in self.results if r.passed and not r.skipped)
         failed = sum(1 for r in self.results if not r.passed)
         total = len(self.results)
 
@@ -1234,8 +1270,15 @@ class Lab3_2_Test:
         print(f"{'=' * 60}")
         print(f"  Total Tests: {total}")
         print(f"  Passed:      {passed}")
+        print(f"  Skipped:     {skipped}")
         print(f"  Failed:      {failed}")
         print(f"{'=' * 60}")
+
+        if skipped > 0:
+            print("\n  Skipped Tests (instructor-only):")
+            for r in self.results:
+                if r.skipped:
+                    print(f"    ⊘ {r.name}")
 
         if failed > 0:
             print("\n  Failed Tests:")
