@@ -156,6 +156,166 @@ These labs require you to **write Python code** in `student_labs/lab1/`. You wil
 
 ---
 
+## 🕸️ Cypher Basics
+
+**Cypher** is Neo4j's query language for property graphs. Rather than writing imperative code that navigates the graph step by step, you describe the **pattern** you are looking for and Cypher finds every match. Think of it like a visual sketch of the subgraph you want — nodes in parentheses, relationships as arrows between them.
+
+Every query you write in Lab 1 builds on five core concepts:
+
+**1. Nodes** — `(variable:Label)`
+
+Nodes are the entities in the graph. You reference them by wrapping a variable name and an optional label in parentheses. The label filters to a specific type; the variable lets you refer to the node later in the query.
+
+```cypher
+(b:Binary)          -- a node labeled Binary, bound to variable b
+(f:Function)        -- a node labeled Function, bound to variable f
+(:BasicBlock)       -- a BasicBlock node (anonymous — no variable, can't reference later)
+```
+
+**2. Relationships** — `-[:REL_TYPE]->`
+
+Relationships are the directed edges that connect nodes. The arrow shows direction; the bracket holds the type. Chaining nodes and relationships together describes a path through the graph.
+
+```cypher
+(b:Binary)-[:HAS_FUNCTION]->(f:Function)                   -- binary owns a function
+(f:Function)-[:ENTRY_BLOCK]->(bb:BasicBlock)                -- function's entry block
+(bb:BasicBlock)-[:CALLS_TO]->(imp:ImportSymbol)             -- block calls an imported API
+```
+
+**3. Property filters** — `{key: value}` or `WHERE`
+
+Nodes and relationships carry key-value properties. You can filter inline with curly braces or in a separate `WHERE` clause. Both styles do the same thing — use whichever reads more clearly.
+
+```cypher
+-- Inline filter
+MATCH (b:Binary {name: "bison_arm"})
+
+-- WHERE clause (equivalent)
+MATCH (b:Binary)
+WHERE b.name = "bison_arm"
+```
+
+**4. Return** — `RETURN projection`
+
+`RETURN` selects which values to include in the result set. You can return node properties, computed values, or entire nodes. Use `AS` to alias columns.
+
+```cypher
+RETURN f.name, f.start_address                     -- two properties
+RETURN f.name AS function_name                      -- aliased column
+RETURN count(f) AS total_functions                  -- aggregation
+```
+
+**5. Bound results** — `LIMIT N`
+
+Always cap your result set with `LIMIT`. Unbounded queries on a large graph can return millions of rows and consume significant memory. This is a safety habit — every query in this workshop uses it.
+
+```cypher
+LIMIT 25           -- return at most 25 rows
+```
+
+These five concepts combine into the four-clause structure you will use in every query:
+
+```cypher
+MATCH   (pattern)          -- Describe the subgraph shape you want
+WHERE   condition          -- Filter results
+RETURN  projection         -- Choose what to output
+LIMIT   N                  -- Bound the result set
+```
+
+**Putting it together — find all functions in a binary:**
+
+```cypher
+MATCH (b:Binary)-[:HAS_FUNCTION]->(f:Function)
+WHERE b.name = "bison_arm"
+RETURN f.name, f.start_address
+LIMIT 25
+```
+
+This query reads almost like a sentence: *"Find every Binary→Function path where the binary is named bison_arm, and return the function name and address."* That readability is intentional — Cypher patterns mirror the shape of the graph itself.
+
+<details>
+<summary><strong>Additional Cypher Syntax Used in Labs 1.2–1.4</strong></summary>
+
+**Key relationships in this workshop's schema:**
+
+| Relationship | From | To | Meaning |
+|-------------|------|-----|---------|
+| `HAS_FUNCTION` | Binary | Function | Binary contains this function |
+| `ENTRY_BLOCK` | Function | BasicBlock | Function's entry point block |
+| `BRANCHES_TO` | BasicBlock | BasicBlock | Control-flow edge between blocks |
+| `CALLS_FUNCTION` | Function | Function | Function-level call edge |
+| `CALLS_TO` | BasicBlock | ImportSymbol | Block calls an imported API |
+| `IMPORTS_SYMBOL` | Binary | ImportSymbol | Binary imports this symbol |
+| `USES_STRING` | BasicBlock | StringLiteral | Block references a string |
+
+**Relationship OR syntax:**
+- `[:ENTRY_BLOCK|ORPHAN_BLOCK]` — match either relationship type (used throughout the labs to reach all basic blocks in a function)
+
+**Aggregation & grouping:**
+
+| Function | What It Does | Example |
+|----------|-------------|---------|
+| `count(x)` | Count matching items | `count(f)` |
+| `count(DISTINCT x)` | Count unique items | `count(DISTINCT imp)` |
+| `collect(x)` | Gather values into a list | `collect(DISTINCT imp.name)` |
+| `size(list)` | Length of a list | `size(collect(DISTINCT imp.name))` |
+
+- `WITH` — pass intermediate results between query parts (like a sub-query):
+
+```cypher
+MATCH (b:Binary)
+WITH b.sha256 AS sha256, count(*) AS count
+WHERE count > 1
+RETURN sha256, count
+```
+
+**Query composition:**
+- `OPTIONAL MATCH` — like `MATCH`, but keeps the row with `null`s if the pattern has no match (left-outer-join semantics)
+- `UNION ALL` — combine result sets from multiple `MATCH ... RETURN` blocks (columns must match)
+- `ORDER BY column DESC` — sort results (`ASC` is the default)
+- `RETURN DISTINCT` — deduplicate rows in the result set
+
+**Parameterized queries:**
+
+Use `$param` placeholders instead of string interpolation — this prevents injection and lets Neo4j cache query plans:
+
+```cypher
+MATCH (b:Binary {sha256: $sha256})-[:HAS_FUNCTION]->(:Function)
+      -[:ENTRY_BLOCK|ORPHAN_BLOCK]->(:BasicBlock)-[:CALLS_TO]->(imp:ImportSymbol)
+WHERE imp.name IN $dangerous_imports
+RETURN DISTINCT imp.name AS import_name
+```
+
+Parameters are passed from Python via the driver: `session.run(query, sha256=sha256, dangerous_imports=["system", "gets"])`.
+
+**Filtering with regex:**
+- `=~` matches a property against a regular expression: `s.value =~ '(?i).*http://.*'`
+- `(?i)` makes the match case-insensitive
+
+**Path operations (Lab 1.4):**
+- Variable-length paths — `(a)-[:CALLS_FUNCTION*1..3]->(b)` finds paths of 1 to 3 hops
+- `nodes(path)` — extract the list of nodes from a named path
+- `length(path)` — number of relationships in the path
+- List comprehension — `[n IN nodes(path) | n.name]` extracts the `name` property from every node in the path
+
+```cypher
+MATCH path = (f)-[:CALLS_FUNCTION*1..5]->(sink:Function)
+RETURN [n IN nodes(path) | n.name] AS call_path,
+       length(path) AS depth
+```
+
+**Common debugging pitfalls:**
+1. Wrong relationship name (`:CALLS` instead of `:CALLS_FUNCTION`)
+2. Wrong direction (reversed the arrow)
+3. Wrong property name (`address` instead of `start_address`)
+4. Missing `DISTINCT` — aggregations without `DISTINCT` can produce inflated counts when multiple paths reach the same node
+
+When a query returns nothing, try a small exploratory query first to verify spelling and direction.
+
+</details>
+
+---
+
 ## 🧠 Key Concepts
 
 | Concept | Description |
