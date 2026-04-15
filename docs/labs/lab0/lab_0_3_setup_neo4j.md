@@ -97,12 +97,12 @@ You should see:
 ✓ Neo4j liveness check passed (connectivity + credentials OK)
 ```
 
-> ⚠️ **After starting the database, it may take a few minutes before the liveness check passes.** If you just clicked Start, you may initially see:
+> ⚠️ **After starting the database, the liveness check may not pass immediately.** If you just clicked Start, you may initially see:
 > ```
 > ERROR - neo4j.pool - Unable to retrieve routing information
 > ERROR - __main__ - ✗ Neo4j liveness check failed: Unable to retrieve routing information
 > ```
-> This is normal — wait 30–60 seconds and try again. The database needs time to fully initialize.
+> This is normal — wait 30–60 seconds and try again. In some environments it can take up to 5 minutes for the database to fully initialize.
 
 > This confirms that the Python environment can reach Neo4j with the configured credentials.
 
